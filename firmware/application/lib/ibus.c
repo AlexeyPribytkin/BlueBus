@@ -2174,3 +2174,50 @@ void IBusCommandLCMTurnRight(IBus_t *ibus)
     unsigned char statusMessage[] = {0x5B, 0x23, 0xEF, 0x26, 0x33};
     IBusSendCommand(ibus, IBUS_DEVICE_LCM, IBUS_DEVICE_GLO, statusMessage, 5);
 }
+
+/**
+ * IBusCommandLCMEnableBlinker()
+ *     Description:
+ *        Light module diagnostics activate swith turn
+ *     Params:
+ *         IBus_t *ibus - The pointer to the IBus_t object
+ *         unsigned char blinker_side - left or right blinker
+ *            IBUS_LM_BLINKER_RIGHT
+ *            IBUS_LM_BLINKER_LEFT
+ *     Returns:
+ *         void
+ */
+void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
+    if (ibus->lmVariant == IBUS_LM_LCM_III) {
+      // LEFT  3F 0F D0 0C [00 00 80 00] [00 00 00 loadV] [00 dimV lwrV 00] 40
+      // RIGHT 3F 0F D0 0C [00 00 40 00] [00 00 00 loadV] [00 dimV lwrV 00] 8F
+      unsigned char msg[] = {
+        0x0C,
+        0x00, 0x00, bitmask, 0x00
+        0x00, 0x00, 0x00, loadVoltage,
+        0x00, dimmerVoltage, lwrVoltage, 0x00
+      };
+    }
+    else if (ibus->lmVariant == IBUS_LM_LCZ) {
+      // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 loadV] [00 dimV lwrV 00] [00 00 00] 7D
+      // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 loadV] [00 dimV lwrV 00] [00 00 00] A2
+      unsigned char msg[] = {
+        0x0C,
+        0x00, 0x00, IBUS_LSZ_OFF, bitmask,
+        0x00, 0x00, 0x00, loadVoltage,
+        0x00, dimmerVoltage, lwrVoltage, 0x00
+        0x00, 0x00, 0x00
+      };
+    }
+    else if (ibus->lmVariant == IBUS_LM_LCZ_2) {
+      // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 80] [00 80 80 00] [00 00 00] DE
+      // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 80] [00 80 80 00] [00 00 00] 0E
+      unsigned char msg[] = {
+        0x0C,
+        0x00, 0x00, IBUS_LSZ_OFF, bitmask,
+        0x00, 0x00, 0x00, IBUS_LSZ_DEFAULT,
+        0x00, IBUS_LSZ_DEFAULT, IBUS_LSZ_DEFAULT, 0x00
+        0x00, 0x00, 0x00
+      };
+    }
+}
