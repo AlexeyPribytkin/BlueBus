@@ -31,6 +31,7 @@
 #define CONFIG_NAV_TYPE_ADDRESS 0x10
 #define CONFIG_VEHICLE_TYPE_ADDRESS 0x11
 #define CONFIG_VEHICLE_VIN_ADDRESS {0x12, 0x13, 0x14, 0x15, 0x16}
+#define CONFIG_LM_VARIANT_ADDRESS 0x17
 /* EEPROM 0x1A - 0x50: User Configurable Settings */
 #define CONFIG_SETTING_LOG_ADDRESS 0x1A
 #define CONFIG_SETTING_POWEROFF_TIMEOUT_ADDRESS 0x1B
@@ -119,6 +120,7 @@ void ConfigGetFirmwareVersionString(char *);
 unsigned char ConfigGetIKEType();
 unsigned char ConfigGetLog(unsigned char);
 unsigned char ConfigGetNavType();
+unsigned char ConfigGetLMVariant();
 unsigned char ConfigGetPoweroffTimeoutDisabled();
 uint16_t ConfigGetSerialNumber();
 unsigned char ConfigGetSetting(unsigned char);

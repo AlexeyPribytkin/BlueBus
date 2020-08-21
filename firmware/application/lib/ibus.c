@@ -31,6 +31,7 @@ IBus_t IBusInit()
     ibus.ignitionStatus = IBUS_IGNITION_OFF;
     ibus.gtVersion = ConfigGetNavType();
     ibus.vehicleType = ConfigGetVehicleType();
+    ibus.lmVariant = ConfigGetLMVariant();
     ibus.lcmDimmerStatus1 = 0xFF;
     ibus.lcmDimmerStatus2 = 0xFF;
     ibus.oilTemperature = 0x00;

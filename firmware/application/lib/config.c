@@ -243,6 +243,25 @@ unsigned char ConfigGetNavType()
 }
 
 /**
+ * ConfigGetLMVariant()
+ *     Description:
+ *         Get the Light Module variant
+ *     Params:
+ *         None
+ *     Returns:
+ *         unsigned char
+ */
+unsigned char ConfigGetLMVariant()
+{
+    unsigned char value = CONFIG_CACHE[CONFIG_LM_VARIANT_ADDRESS];
+    if (value == 0x00) {
+        value = ConfigGetByte(CONFIG_LM_VARIANT_ADDRESS);
+        CONFIG_CACHE[CONFIG_LM_VARIANT_ADDRESS] = value;
+    }
+    return value;
+}
+
+/**
  * ConfigGetPoweroffTimeoutDisabled()
  *     Description:
  *         Check if Auto-Power Off is disabled
