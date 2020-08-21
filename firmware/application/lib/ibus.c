@@ -968,6 +968,55 @@ uint8_t IBusGetNavType(unsigned char *packet)
 }
 
 /**
+ * IBusGetLightModuleVariant()
+ *     Description:
+ *        Get the light module variant, as per EDIABAS:
+ *        Group file: D_00D0.GRP
+*         Version:    1.5.1
+ *     Params:
+ *         unsigned char *packet - Diagnostics ident packet
+ *     Returns:
+ *         uint8_t - The light module variant
+ */
+uint8_t IBusGetLightModuleVariant(unsigned char *packet)
+{
+    uint8_t diagnosticIndex = IBusGetLightModuleDiagnosticIndex(packet);
+    uint8_t codingIndex = IBusGetLightModuleCodingIndex(packet);
+    uint8_t lightModuleVariant = 0;
+
+    // String interpolation in C? What is C?
+    LogDebug(LOG_SOURCE_IBUS, "Light Module: DI = $di, CI = $ci");
+
+    if(diagnosticIndex < 0x10) {
+      lightModuleVariant = IBUS_LM_LME38;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LME38");
+    } else if(diagnosticIndex == 0x10) {
+      lightModuleVariant = IBUS_LM_LCM;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM");
+    } else if(diagnosticIndex == 0x11) {
+      lightModuleVariant = IBUS_LM_LCM_A;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_A");
+    } else if(diagnosticIndex == 0x12 && codingIndex == 0x16) {
+      lightModuleVariant = IBUS_LM_LCM_II;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_II");
+    } else if(diagnosticIndex == 0x12 && codingIndex == 0x17 || diagnosticIndex == 0x13) {
+      lightModuleVariant = IBUS_LM_LCM_III;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_III");
+    } else if(diagnosticIndex == 0x14) {
+      lightModuleVariant = IBUS_LM_LCM_IV;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_IV");
+    } else if(diagnosticIndex >= 0x20 && diagnosticIndex <= 0x2f) {
+      lightModuleVariant = IBUS_LM_LCZ;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCZ");
+    } else if(diagnosticIndex == 0x30) {
+      lightModuleVariant = IBUS_LM_LCZ_2;
+      LogInfo(LOG_SOURCE_IBUS, "Light Module: LCZ_2");
+    }
+
+    return lightModuleVariant;
+}
+
+/**
  * IBusGetVehicleType()
  *     Description:
  *        Get the vehicle type from the cluster type response

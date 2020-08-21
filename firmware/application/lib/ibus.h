@@ -211,6 +211,15 @@
 
 #define IBUS_LM_CI_ID_OFFSET 9
 #define IBUS_LM_DI_ID_OFFSET 10
+// Light Module variants
+#define IBUS_LM_LME38 1
+#define IBUS_LM_LCM 2
+#define IBUS_LM_LCM_A 3
+#define IBUS_LM_LCM_II 4
+#define IBUS_LM_LCM_III 5
+#define IBUS_LM_LCM_IV 6
+#define IBUS_LM_LSZ 7
+#define IBUS_LM_LSZ_2 8
 
 #define IBusMIDSymbolNext 0xC9
 #define IBusMIDSymbolBack 0xCA
@@ -358,6 +367,7 @@ uint8_t IBusGetNavDiagnosticIndex(unsigned char *);
 uint8_t IBusGetNavHWVersion(unsigned char *);
 uint8_t IBusGetNavSWVersion(unsigned char *);
 uint8_t IBusGetNavType(unsigned char *);
+uint8_t IBusGetLightModuleVariant(unsigned char *);
 uint8_t IBusGetVehicleType(unsigned char *);
 void IBusCommandCDCAnnounce(IBus_t *);
 void IBusCommandCDCStatus(IBus_t *, unsigned char, unsigned char, unsigned char);
