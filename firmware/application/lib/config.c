@@ -541,6 +541,21 @@ void ConfigSetNavType(unsigned char type)
     EEPROMWriteByte(CONFIG_NAV_TYPE_ADDRESS, type);
 }
 
+/***
+ * ConfigSetLMVariant()
+ *     Description:
+ *         Set the Light Module variant
+ *     Params:
+ *         unsigned char version
+ *     Returns:
+ *         void
+ */
+void ConfigSetLMVariant(unsigned char variant)
+{
+    CONFIG_CACHE[CONFIG_LM_VARIANT_ADDRESS] = variant;
+    EEPROMWriteByte(CONFIG_LM_VARIANT_ADDRESS, variant);
+}
+
 /**
  * ConfigSetPoweroffTimeoutDisabled()
  *     Description:

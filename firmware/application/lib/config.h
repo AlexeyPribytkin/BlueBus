@@ -137,6 +137,7 @@ void ConfigSetIKEType(unsigned char);
 void ConfigSetLog(unsigned char, unsigned char);
 void ConfigSetSetting(unsigned char, unsigned char);
 void ConfigSetNavType(unsigned char);
+void ConfigSetLMVariant(unsigned char);
 void ConfigSetPoweroffTimeoutDisabled(unsigned char);
 void ConfigSetTrapCount(unsigned char, unsigned char);
 void ConfigSetTrapIncrement(unsigned char);

@@ -154,6 +154,11 @@ void HandlerInit(BC127_t *bt, IBus_t *ibus)
         &Context
     );
     EventRegisterCallback(
+        IBusEvent_LMIdentResponse,
+        &HandlerIBusLMIdentResponse,
+        &Context
+    );
+    EventRegisterCallback(
         IBusEvent_MFLButton,
         &HandlerIBusMFLButton,
         &Context
