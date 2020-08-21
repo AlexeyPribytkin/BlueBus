@@ -209,6 +209,9 @@
 #define IBUS_LCM_BLINKER_DRV_E46 0x50
 #define IBUS_LCM_BLINKER_PSG_E46 0x80
 
+#define IBUS_LM_CI_ID_OFFSET 9
+#define IBUS_LM_DI_ID_OFFSET 10
+
 #define IBusMIDSymbolNext 0xC9
 #define IBusMIDSymbolBack 0xCA
 

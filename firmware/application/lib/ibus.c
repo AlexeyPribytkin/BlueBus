@@ -851,6 +851,40 @@ uint8_t IBusGetNavDiagnosticIndex(unsigned char *packet)
     return UtilsStrToInt(diVersion);
 }
 
+/***
+ * IBusGetLightModuleDiagnosticIndex()
+ *     Description:
+ *        Get the light module diagnostic index
+ *     Params:
+ *         unsigned char *packet - The diagnostics packet
+ *     Returns:
+ *         uint8_t - the light module diagnostic index
+ */
+uint8_t IBusGetLightModuleDiagnosticIndex(unsigned char *packet)
+{
+    uint8_t diagnosticIndex = {
+        packet[IBUS_LM_DI_ID_OFFSET]
+    };
+    return diagnosticIndex;
+}
+
+/***
+ * IBusGetLightModuleCodingIndex()
+ *     Description:
+ *        Get the light module coding index
+ *     Params:
+ *         unsigned char *packet - The diagnostics packet
+ *     Returns:
+ *         uint8_t - the light module coding index
+ */
+uint8_t IBusGetLightModuleCodingIndex(unsigned char *packet)
+{
+    uint8_t codingIndex = {
+        packet[IBUS_LM_CI_ID_OFFSET]
+    };
+    return codingIndex;
+}
+
 /**
  * IBusGetNavHWVersion()
  *     Description:
