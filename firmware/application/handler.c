@@ -998,6 +998,9 @@ void HandlerIBusIKEIgnitionStatus(void *ctx, unsigned char *pkt)
             // Ask the LCM for the redundant data
             LogDebug(LOG_SOURCE_SYSTEM, "Handler: Request LCM Redundant Data");
             IBusCommandLCMGetRedundantData(context->ibus);
+            // Possibly redundant with LM ready event
+            LogDebug(LOG_SOURCE_SYSTEM, "Handler: Request LM Ident");
+            IBusCommandDIAGetIOStatus(context->ibus, IBUS_DEVICE_LCM);
         }
     } else {
         if (ignitionStatus > IBUS_IGNITION_OFF) {
@@ -1094,6 +1097,24 @@ void HandlerIBusIKEVehicleType(void *ctx, unsigned char *pkt)
                 "Detected New Vehicle Type: E38/E39/E53 - High OBC"
             );
         }
+    }
+}
+
+/**
+ * HandlerIBusLMIdentResponse()
+ *     Description:
+ *         Identify the light module variant
+ *     Params:
+ *         void *ctx - The context provided at registration
+ *         unsigned char *type - The light module variant
+ *     Returns:
+ *         void
+ */
+void HandlerIBusLMIdentResponse(void *ctx, unsigned char *variant)
+{
+    unsigned char lmVariant = *variant;
+    if (ConfigGetLMVariant() != lmVariant) {
+        ConfigSetLMVariant(lmVariant);
     }
 }
 
@@ -1483,6 +1504,9 @@ void HandlerIBusModuleStatusResponse(void *ctx, unsigned char *pkt)
     ) {
         LogInfo(LOG_SOURCE_SYSTEM, "LCM Detected");
         context->ibusModuleStatus.LCM = 1;
+        // You request LM's redundant data at ignition state change-
+        // I'm unsure if ignition or device ready is the preference?
+
         // Unsure if I can rely upon ibus struct or better to read mem?
         unsigned char lmVariant = ibus->lmVariant;
         // unsigned char lmVariant = ConfigGetLMVariant();

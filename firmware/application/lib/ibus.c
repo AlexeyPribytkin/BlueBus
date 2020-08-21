@@ -314,6 +314,21 @@ static void IBusHandleLCMMessage(IBus_t *ibus, unsigned char *pkt)
         EventTriggerCallback(IBusEvent_LCMDiagnosticsAcknowledge, pkt);
     } else if (pkt[IBUS_PKT_CMD] == IBUS_CMD_LCM_RESP_REDUNDANT_DATA) {
         EventTriggerCallback(IBusEvent_LCMRedundantData, pkt);
+    } else if (pkt[IBUS_PKT_DST] == IBUS_DEVICE_DIA &&
+               pkt[IBUS_PKT_CMD] == IBUS_CMD_DIA_DIAG_RESPONSE && // 0xa0
+               pkt[IBUS_PKT_LEN] == 0x0F
+    ) {
+      // I was a bit nervous about relying upon message length, but only an
+      // ident request (0x00) results in a reply of this length. Winning.
+
+      // I would have done the same GT and had the ident logic in the handler,
+      // but it's a bit unwieldy so I split it out.
+      uint8_t lmVariant = IBusGetLightModuleVariant(pkt);
+      // I didn't modify struct in above method as it wasn't very _SOLID_.
+      // Yes, that's right, SOLID. Don't you roll your eyes at me!
+      ibus->lmVariant = lightModuleVariant;
+
+      EventTriggerCallback(IBusEvent_LMIdentResponse, pkt);
     }
 }
 
@@ -984,8 +999,11 @@ uint8_t IBusGetLightModuleVariant(unsigned char *packet)
     uint8_t codingIndex = IBusGetLightModuleCodingIndex(packet);
     uint8_t lightModuleVariant = 0;
 
-    // String interpolation in C? What is C?
-    LogDebug(LOG_SOURCE_IBUS, "Light Module: DI = $di, CI = $ci");
+    LogDebug(
+        "\r\nIBus: LM DI: %d CI: %d\r\n",
+        diagnosticIndex,
+        codingIndex,
+    );
 
     if(diagnosticIndex < 0x10) {
       lightModuleVariant = IBUS_LM_LME38;
