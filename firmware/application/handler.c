@@ -1483,6 +1483,13 @@ void HandlerIBusModuleStatusResponse(void *ctx, unsigned char *pkt)
     ) {
         LogInfo(LOG_SOURCE_SYSTEM, "LCM Detected");
         context->ibusModuleStatus.LCM = 1;
+        // Unsure if I can rely upon ibus struct or better to read mem?
+        unsigned char lmVariant = ibus->lmVariant;
+        // unsigned char lmVariant = ConfigGetLMVariant();
+        if (lmVariant == 0) {
+          // Request light module ident
+          IBusCommandDIAGetIdentity(context->ibus, IBUS_DEVICE_LCM);
+        }
     } else if (module == IBUS_DEVICE_MID &&
         context->ibusModuleStatus.MID == 0
     ) {
