@@ -326,7 +326,7 @@ static void IBusHandleLCMMessage(IBus_t *ibus, unsigned char *pkt)
       uint8_t lmVariant = IBusGetLightModuleVariant(pkt);
       // I didn't modify struct in above method as it wasn't very _SOLID_.
       // Yes, that's right, SOLID. Don't you roll your eyes at me!
-      ibus->lmVariant = lightModuleVariant;
+      ibus->lmVariant = lmVariant;
 
       EventTriggerCallback(IBusEvent_LMIdentResponse, pkt);
     }
@@ -997,7 +997,7 @@ uint8_t IBusGetLightModuleVariant(unsigned char *packet)
 {
     uint8_t diagnosticIndex = IBusGetLightModuleDiagnosticIndex(packet);
     uint8_t codingIndex = IBusGetLightModuleCodingIndex(packet);
-    uint8_t lightModuleVariant = 0;
+    uint8_t lmVariant = 0;
 
     LogDebug(
         "\r\nIBus: LM DI: %d CI: %d\r\n",
@@ -1006,32 +1006,32 @@ uint8_t IBusGetLightModuleVariant(unsigned char *packet)
     );
 
     if(diagnosticIndex < 0x10) {
-      lightModuleVariant = IBUS_LM_LME38;
+      lmVariant = IBUS_LM_LME38;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LME38");
     } else if(diagnosticIndex == 0x10) {
-      lightModuleVariant = IBUS_LM_LCM;
+      lmVariant = IBUS_LM_LCM;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM");
     } else if(diagnosticIndex == 0x11) {
-      lightModuleVariant = IBUS_LM_LCM_A;
+      lmVariant = IBUS_LM_LCM_A;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_A");
     } else if(diagnosticIndex == 0x12 && codingIndex == 0x16) {
-      lightModuleVariant = IBUS_LM_LCM_II;
+      lmVariant = IBUS_LM_LCM_II;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_II");
     } else if(diagnosticIndex == 0x12 && codingIndex == 0x17 || diagnosticIndex == 0x13) {
-      lightModuleVariant = IBUS_LM_LCM_III;
+      lmVariant = IBUS_LM_LCM_III;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_III");
     } else if(diagnosticIndex == 0x14) {
-      lightModuleVariant = IBUS_LM_LCM_IV;
+      lmVariant = IBUS_LM_LCM_IV;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCM_IV");
     } else if(diagnosticIndex >= 0x20 && diagnosticIndex <= 0x2f) {
-      lightModuleVariant = IBUS_LM_LCZ;
+      lmVariant = IBUS_LM_LCZ;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCZ");
     } else if(diagnosticIndex == 0x30) {
-      lightModuleVariant = IBUS_LM_LCZ_2;
+      lmVariant = IBUS_LM_LCZ_2;
       LogInfo(LOG_SOURCE_IBUS, "Light Module: LCZ_2");
     }
 
-    return lightModuleVariant;
+    return lmVariant;
 }
 
 /**
