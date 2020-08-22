@@ -2290,7 +2290,10 @@ void IBusCommandLCMTurnRight(IBus_t *ibus)
  *         void
  */
 void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
-    if (ibus->lmVariant == IBUS_LM_LCM_III) {
+    if (ibus->lmVariant == IBUS_LM_LCM_III ||
+          ibus->lmVariant == IBUS_LM_LCM_II ||
+          ibus->lmVariant == IBUS_LM_LCM_A ||
+          ibus->lmVariant == IBUS_LM_LME38) {
       // LEFT  3F 0F D0 0C [00 00 80 00] [00 00 00 00] [00 dimV lwrV 00] 40
       // RIGHT 3F 0F D0 0C [00 00 40 00] [00 00 00 00] [00 dimV lwrV 00] 8F
       unsigned char msg[] = {
@@ -2300,26 +2303,15 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
         0x00, dimmerVoltage, lwrVoltage, 0x00
       };
     }
-    else if (ibus->lmVariant == IBUS_LM_LCZ) {
+    else if (ibus->lmVariant == IBUS_LM_LCZ ||
+              ibus->lmVariant == IBUS_LM_LCZ_2) {
       // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 frontLoadV] [00 dimV rearLoadV 00] [00 00 00] 7D
       // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 frontLoadV] [00 dimV rearLoadV 00] [00 00 00] A2
       unsigned char msg[] = {
         0x0C,
-        0x00, 0x00, IBUS_LSZ_OFF, bitmask,
+        0x00, 0x00, 0xff, bitmask,
         0x00, 0x00, 0x00, frontLoadVoltage,
-        0x00, dimmerVoltage, rearLoadVoltage, 0x00
+        0x00, dimmerVoltage, rearLoadVoltage, photoVoltage
         0x00, 0x00, 0x00
       };
-    }
-    else if (ibus->lmVariant == IBUS_LM_LCZ_2) {
-      // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 80] [00 80 80 00] [00 00 00] DE
-      // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 80] [00 80 80 00] [00 00 00] 0E
-      unsigned char msg[] = {
-        0x0C,
-        0x00, 0x00, IBUS_LSZ_OFF, bitmask,
-        0x00, 0x00, 0x00, IBUS_LSZ_DEFAULT,
-        0x00, IBUS_LSZ_DEFAULT, IBUS_LSZ_DEFAULT, 0x00
-        0x00, 0x00, 0x00
-      };
-    }
 }
