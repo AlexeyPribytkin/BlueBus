@@ -328,7 +328,7 @@ static void IBusHandleLCMMessage(IBus_t *ibus, unsigned char *pkt)
       // Yes, that's right, SOLID. Don't you roll your eyes at me!
       ibus->lmVariant = lmVariant;
 
-      EventTriggerCallback(IBusEvent_LMIdentResponse, pkt);
+      EventTriggerCallback(IBusEvent_LMIdentResponse, lmVariant);
     }
 }
 
