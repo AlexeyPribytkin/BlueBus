@@ -358,6 +358,7 @@ typedef struct IBus_t {
     unsigned char cdChangerFunction;
     unsigned char gtVersion;
     unsigned char vehicleType;
+    unsigned char lmVariant;
     unsigned char ignitionStatus;
     unsigned char lmLoadFrontVoltage;
     unsigned char lmDimmerVoltage;
