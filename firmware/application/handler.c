@@ -1003,9 +1003,6 @@ void HandlerIBusIKEIgnitionStatus(void *ctx, unsigned char *pkt)
             // Ask the LCM for the redundant data
             LogDebug(LOG_SOURCE_SYSTEM, "Handler: Request LCM Redundant Data");
             IBusCommandLCMGetRedundantData(context->ibus);
-            // Possibly redundant with LM ready event
-            LogDebug(LOG_SOURCE_SYSTEM, "Handler: Request LM Ident");
-            IBusCommandDIAGetIOStatus(context->ibus, IBUS_DEVICE_LCM);
         }
     } else {
         if (ignitionStatus > IBUS_IGNITION_OFF) {
@@ -1275,6 +1272,8 @@ void HandlerIBusLCMRedundantData(void *ctx, unsigned char *pkt)
             vehicleId[3] & 0xF,
             vehicleId[4]
         );
+        // Request light module ident
+        IBusCommandDIAGetIdentity(context->ibus, IBUS_DEVICE_LCM);
         // Save the new VIN
         ConfigSetVehicleIdentity(vehicleId);
         // Request the vehicle type
@@ -1509,16 +1508,6 @@ void HandlerIBusModuleStatusResponse(void *ctx, unsigned char *pkt)
     ) {
         LogInfo(LOG_SOURCE_SYSTEM, "LCM Detected");
         context->ibusModuleStatus.LCM = 1;
-        // You request LM's redundant data at ignition state change-
-        // I'm unsure if ignition or device ready is the preference?
-
-        // Unsure if I can rely upon ibus struct or better to read mem?
-        unsigned char lmVariant = ibus->lmVariant;
-        // unsigned char lmVariant = ConfigGetLMVariant();
-        if (lmVariant == 0) {
-          // Request light module ident
-          IBusCommandDIAGetIdentity(context->ibus, IBUS_DEVICE_LCM);
-        }
     } else if (module == IBUS_DEVICE_MID &&
         context->ibusModuleStatus.MID == 0
     ) {
