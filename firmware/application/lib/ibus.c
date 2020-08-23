@@ -1891,67 +1891,6 @@ void IBusCommandIKETextClear(IBus_t *ibus)
 }
 
 /**
- * IBusCommandLCMEnableBlinker()
- *     Description:
- *        Issue a diagnostic message to the LCM to enable the turn signals
- *            // E38/E39/E53/Range Rover Left / Right
- *            3F 0F D0 0C 00 00 40 00 00 00 00 00 00 FF FF 00 AC
- *            3F 0F D0 0C 00 00 80 00 00 00 00 00 00 FF FF 00 6C
- *            // E46/Z4 Left / Right
- *            3F 0F D0 0C 00 00 FF 50 00 00 00 80 00 80 80 00 C3
- *            3F 0F D0 0C 00 00 FF 80 00 00 00 80 00 80 80 00 13
- *     Params:
- *         IBus_t *ibus - The pointer to the IBus_t object
- *         unsigned char blinker - The byte containing the bits of which bulb
- *             to illuminate
- *     Returns:
- *         void
- */
-void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker) {
-    unsigned char lightStatus = 0x00;
-    unsigned char lightStatus2 = 0x00;
-    unsigned char ioStatus = 0x00;
-
-    if (ibus->vehicleType == IBUS_VEHICLE_TYPE_E38_E39_E53) {
-        lightStatus = blinker;
-    } else if (ibus->vehicleType == IBUS_VEHICLE_TYPE_E46_Z4) {
-        lightStatus = 0xFF;
-        if (blinker == IBUS_LCM_BLINKER_DRV) {
-            blinker = IBUS_LCM_BLINKER_DRV_E46;
-        } else if (blinker == IBUS_LCM_BLINKER_PSG) {
-            blinker = IBUS_LCM_BLINKER_PSG_E46;
-        }
-        lightStatus2 = blinker;
-        ioStatus = 0x80;
-    }
-    // Only fire the command if the light status byte is set
-    if (lightStatus != 0x00) {
-        unsigned char msg[] = {
-            0x0C,
-            0x00,
-            0x00,
-            lightStatus,
-            lightStatus2,
-            0x00,
-            0x00,
-            0x00,
-            ioStatus,
-            0x00,
-            ibus->lcmDimmerStatus1,
-            ibus->lcmDimmerStatus2,
-            0x00
-        };
-        IBusSendCommand(
-            ibus,
-            IBUS_DEVICE_DIA,
-            IBUS_DEVICE_LCM,
-            msg,
-            sizeof(msg)
-        );
-    }
-}
-
-/**
  * IBusCommandLCMGetRedundantData()
  *     Description:
  *        Query the LCM for the vehicle vehicle
