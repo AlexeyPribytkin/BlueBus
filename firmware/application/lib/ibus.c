@@ -32,8 +32,10 @@ IBus_t IBusInit()
     ibus.gtVersion = ConfigGetNavType();
     ibus.vehicleType = ConfigGetVehicleType();
     ibus.lmVariant = ConfigGetLMVariant();
-    ibus.lcmDimmerStatus1 = 0xFF;
-    ibus.lcmDimmerStatus2 = 0xFF;
+    ibus.lmLoadFrontVoltage = 0x00; // front load sensor voltage (LWR)
+    ibus.lmDimmerVoltage = 0xFF;
+    ibus.lmLoadRearVoltage = 0x00; // rear load sensor voltage (LWR)
+    ibus.lmPhotoVoltage = 0xFF; // photosensor voltage (LSZ)
     ibus.oilTemperature = 0x00;
     ibus.coolantTemperature = 0x00;
     ibus.rxBufferIdx = 0;
@@ -290,8 +292,14 @@ static void IBusHandleLCMMessage(IBus_t *ibus, unsigned char *pkt)
                pkt[IBUS_PKT_CMD] == IBUS_CMD_DIA_DIAG_RESPONSE &&
                pkt[IBUS_PKT_LEN] == 0x23
     ) {
-        ibus->lcmDimmerStatus1 = pkt[19];
-        ibus->lcmDimmerStatus2 = pkt[20];
+        // Status reply length and mapping is the same for LCM and LSZ variants.
+        // The non-applicable parameters default to 0x00, i.e. LCM does not
+        // have a photosensor, so value will be 0x00.
+        ibus->lmLoadFrontVoltage = pkt[IBUS_LM_IO_LOAD_FRONT_OFFSET]; // front load sensor voltage (Xenon)
+        ibus->lmDimmerVoltage = pkt[IBUS_LM_IO_DIMMER_OFFSET]; // dimmer (58g) voltage
+        ibus->lmLoadRearVoltage = pkt[IBUS_LM_IO_LOAD_REAR_OFFSET]; // rear load sensor voltage (Xenon)/manual vertical aim control (non Xenon)
+        ibus->lmPhotoVoltage = pkt[IBUS_LM_IO_PHOTO_OFFSET]; // photosensor voltage (LSZ)
+
         if (ibus->vehicleType != IBUS_VEHICLE_TYPE_E46_Z4 &&
             pkt[23] != 0x00
         ) {
@@ -2300,18 +2308,18 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
         0x0C,
         0x00, 0x00, bitmask, 0x00
         0x00, 0x00, 0x00, 0x00,
-        0x00, dimmerVoltage, lwrVoltage, 0x00
+        0x00, ibus->lmDimmerVoltage, ibus->lmLoadRearVoltage, 0x00
       };
     }
     else if (ibus->lmVariant == IBUS_LM_LCZ ||
               ibus->lmVariant == IBUS_LM_LCZ_2) {
-      // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 frontLoadV] [00 dimV rearLoadV 00] [00 00 00] 7D
-      // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 frontLoadV] [00 dimV rearLoadV 00] [00 00 00] A2
+      // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 frontV] [00 dimV rearV photoV] [00 00 00] 7D
+      // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 frontV] [00 dimV rearV photoV] [00 00 00] A2
       unsigned char msg[] = {
         0x0C,
-        0x00, 0x00, 0xff, bitmask,
-        0x00, 0x00, 0x00, frontLoadVoltage,
-        0x00, dimmerVoltage, rearLoadVoltage, photoVoltage
+        0x00, 0x00, IBUS_LSZ_HEADLIGHT_OFF, bitmask,
+        0x00, 0x00, 0x00, ibus->lmLoadFrontVoltage,
+        0x00, ibus->lmDimmerVoltage, ibus->lmLoadRearVoltage, ibus->lmPhotoVoltage
         0x00, 0x00, 0x00
       };
 }

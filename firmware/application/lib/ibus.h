@@ -208,9 +208,15 @@
 #define IBUS_LCM_BLINKER_PSG 0x40
 #define IBUS_LCM_BLINKER_DRV_E46 0x50
 #define IBUS_LCM_BLINKER_PSG_E46 0x80
+#define IBUS_LSZ_HEADLIGHT_OFF 0xff
 
 #define IBUS_LM_CI_ID_OFFSET 9
 #define IBUS_LM_DI_ID_OFFSET 10
+// Status (0x0b) parameter offsets
+#define IBUS_LM_IO_LOAD_FRONT_OFFSET 11
+#define IBUS_LM_IO_DIMMER_OFFSET 19
+#define IBUS_LM_IO_LOAD_REAR_OFFSET 20
+#define IBUS_LM_IO_PHOTO_OFFSET 21
 // Light Module variants
 #define IBUS_LM_LME38 1
 #define IBUS_LM_LCM 2
@@ -353,8 +359,10 @@ typedef struct IBus_t {
     unsigned char gtVersion;
     unsigned char vehicleType;
     unsigned char ignitionStatus;
-    unsigned char lcmDimmerStatus1;
-    unsigned char lcmDimmerStatus2;
+    unsigned char lmLoadFrontVoltage;
+    unsigned char lmDimmerVoltage;
+    unsigned char lmLoadRearVoltage;
+    unsigned char lmPhotoVoltage;
     unsigned char oilTemperature;
     unsigned char coolantTemperature;
 } IBus_t;
