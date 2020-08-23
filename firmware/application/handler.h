@@ -55,8 +55,8 @@ typedef struct HandlerBodyModuleStatus_t {
 typedef struct HandlerLightControlStatus_t {
     uint8_t lightStatus: 1;
     uint8_t triggerStatus: 1;
-    uint8_t drvBlinker: 1;
-    uint8_t psgBlinker: 1;
+    uint8_t leftBlinker: 1;
+    uint8_t rightBlinker: 1;
     uint8_t blinkCount: 4;
 } HandlerLightControlStatus_t;
 typedef struct HandlerModuleStatus_t {
