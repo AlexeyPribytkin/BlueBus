@@ -2231,36 +2231,75 @@ void IBusCommandLCMTurnRight(IBus_t *ibus)
  *     Params:
  *         IBus_t *ibus - The pointer to the IBus_t object
  *         unsigned char blinker_side - left or right blinker
- *            IBUS_LM_BLINKER_RIGHT
- *            IBUS_LM_BLINKER_LEFT
  *     Returns:
  *         void
  */
 void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
     unsigned char msg[] = {};
+    unsigned char blinker = IBUS_LSZ_BLINKER_OFF;
 
     if (ibus->lmVariant == IBUS_LM_LCM_III ||
           ibus->lmVariant == IBUS_LM_LCM_II ||
           ibus->lmVariant == IBUS_LM_LCM_A ||
-          ibus->lmVariant == IBUS_LM_LME38) {
+          ibus->lmVariant == IBUS_LM_LME38)
+    {
+      switch (blinker_side) {
+        case IBUS_LM_BLINKER_LEFT:
+          blinker = IBUS_LCM_BLINKER_LEFT;
+          break;
+        case IBUS_LM_BLINKER_RIGHT:
+          blinker = IBUS_LCM_BLINKER_RIGHT;
+          break;
+      }
       msg = {
-        0x0C,
-        0x00, 0x00, bitmask, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, ibus->lmDimmerVoltage, ibus->lmLoadRearVoltage, 0x00
+        IBUS_CMD_DIA_JOB_REQUEST,
+        0x00,
+        0x00,
+        blinker,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        ibus->lmDimmerVoltage,
+        ibus->lmLoadRearVoltage,
+        0x00
       };
     }
     else if (ibus->lmVariant == IBUS_LM_LCZ ||
-              ibus->lmVariant == IBUS_LM_LCZ_2) {
+              ibus->lmVariant == IBUS_LM_LCZ_2)
+    {
+      switch (blinker_side) {
+        case IBUS_LM_BLINKER_LEFT:
+          blinker = IBUS_LSZ_BLINKER_LEFT;
+          break;
+        case IBUS_LM_BLINKER_RIGHT:
+          blinker = IBUS_LSZ_BLINKER_RIGHT;
+          break;
+      }
       msg = {
-        0x0C,
-        0x00, 0x00, IBUS_LSZ_HEADLIGHT_OFF, bitmask,
-        0x00, 0x00, 0x00, ibus->lmLoadFrontVoltage,
-        0x00, ibus->lmDimmerVoltage, ibus->lmLoadRearVoltage, ibus->lmPhotoVoltage
-        0x00, 0x00, 0x00
+        IBUS_CMD_DIA_JOB_REQUEST,
+        0x00,
+        0x00,
+        IBUS_LSZ_HEADLIGHT_OFF,
+        blinker,
+        0x00,
+        0x00,
+        0x00,
+        ibus->lmLoadFrontVoltage,
+        0x00,
+        ibus->lmDimmerVoltage,
+        ibus->lmLoadRearVoltage,
+        ibus->lmPhotoVoltage
+        0x00,
+        0x00,
+        0x00
       };
     }
-    if(sizeof(msg) != 0) {
+
+    if(blinker != IBUS_LSZ_BLINKER_OFF && sizeof(msg) != 0)
+    {
       IBusSendCommand(
           ibus,
           IBUS_DEVICE_DIA,

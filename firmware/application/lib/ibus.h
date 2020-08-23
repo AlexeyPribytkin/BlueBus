@@ -204,6 +204,13 @@
 // Lamp Status (0x5b)
 #define IBUS_LM_LEFT_SIG_BIT 5
 #define IBUS_LM_RIGHT_SIG_BIT 6
+
+// LM diagnostics activate (0x0c)
+#define IBUS_LCM_BLINKER_LEFT 0x80
+#define IBUS_LCM_BLINKER_RIGHT 0x40
+#define IBUS_LSZ_BLINKER_LEFT 0x50
+#define IBUS_LSZ_BLINKER_RIGHT 0x80
+#define IBUS_LSZ_BLINKER_OFF 0xff
 #define IBUS_LSZ_HEADLIGHT_OFF 0xff
 
 // Ident (0x00) parameter offsets
