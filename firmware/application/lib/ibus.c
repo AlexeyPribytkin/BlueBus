@@ -2238,10 +2238,22 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
     unsigned char msg[] = {};
     unsigned char blinker = IBUS_LSZ_BLINKER_OFF;
 
-    if (ibus->lmVariant == IBUS_LM_LCM_III ||
-          ibus->lmVariant == IBUS_LM_LCM_II ||
-          ibus->lmVariant == IBUS_LM_LCM_A ||
-          ibus->lmVariant == IBUS_LM_LME38)
+    if (ibus->lmVariant == IBUS_LM_LME38)
+    {
+      // S_BLK_L	0	0x01	switch left turn
+      // S_BLK_R	0	0x02	switch right turn
+    }
+    else if (ibus->lmVariant == IBUS_LM_LCM ||
+              ibus->lmVariant == IBUS_LM_LCM_A)
+    {
+      // S2_BLK_R,0,0x40	S2_BLK_R	0	0x40	switch No.2 right turn
+      // S2_BLK_L,0,0x80	S2_BLK_L	0	0x80	switch No.2 left turn
+      // S1_BLK_L,1,0x01	S1_BLK_L	1	0x01	switch No.1 left turn
+      // S1_BLK_R,1,0x02	S1_BLK_R	1	0x02	switch No.1 right turn
+    }
+    else if (ibus->lmVariant == IBUS_LM_LCM_II ||
+              ibus->lmVariant == IBUS_LM_LCM_III ||
+              ibus->lmVariant == IBUS_LM_LCM_IV)
     {
       switch (blinker_side) {
         case IBUS_LM_BLINKER_LEFT:
