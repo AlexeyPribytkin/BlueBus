@@ -2257,10 +2257,10 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
     {
       switch (blinker_side) {
         case IBUS_LM_BLINKER_LEFT:
-          blinker = IBUS_LCM_BLINKER_LEFT;
+          blinker = IBUS_LCM_II_BLINKER_LEFT;
           break;
         case IBUS_LM_BLINKER_RIGHT:
-          blinker = IBUS_LCM_BLINKER_RIGHT;
+          blinker = IBUS_LCM_II_BLINKER_RIGHT;
           break;
       }
       msg = {

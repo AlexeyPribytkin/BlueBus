@@ -206,14 +206,18 @@
 #define IBUS_LM_RIGHT_SIG_BIT 6
 
 // LM diagnostics activate (0x0c)
-#define IBUS_LME38_BLINKER_LEFT 0x01
-#define IBUS_LME38_BLINKER_RIGHT 0x02
-#define IBUS_LCM_BLINKER_LEFT 0x80
-#define IBUS_LCM_BLINKER_RIGHT 0x40
-#define IBUS_LSZ_BLINKER_LEFT 0x50
-#define IBUS_LSZ_BLINKER_RIGHT 0x80
-#define IBUS_LSZ_BLINKER_OFF 0xff
-#define IBUS_LSZ_HEADLIGHT_OFF 0xff
+#define IBUS_LME38_BLINKER_LEFT 0x01    // byte 0
+#define IBUS_LME38_BLINKER_RIGHT 0x02   // byte 0
+
+// LCM_II, LCM_III, LCM_IV
+#define IBUS_LCM_II_BLINKER_LEFT 0x80    // byte 2
+#define IBUS_LCM_II_BLINKER_RIGHT 0x40   // byte 2
+
+// LSZ, LSZ_2
+#define IBUS_LSZ_HEADLIGHT_OFF 0xff   // byte 2
+#define IBUS_LSZ_BLINKER_LEFT 0x50    // byte 3
+#define IBUS_LSZ_BLINKER_RIGHT 0x80   // byte 3
+#define IBUS_LSZ_BLINKER_OFF 0xff     // byte 3
 
 // Ident (0x00) parameter offsets
 #define IBUS_LM_CI_ID_OFFSET 9
