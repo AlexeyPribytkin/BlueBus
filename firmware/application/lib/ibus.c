@@ -2304,8 +2304,6 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
           ibus->lmVariant == IBUS_LM_LCM_II ||
           ibus->lmVariant == IBUS_LM_LCM_A ||
           ibus->lmVariant == IBUS_LM_LME38) {
-      // LEFT  3F 0F D0 0C [00 00 80 00] [00 00 00 00] [00 dimV lwrV 00] 40
-      // RIGHT 3F 0F D0 0C [00 00 40 00] [00 00 00 00] [00 dimV lwrV 00] 8F
       msg = {
         0x0C,
         0x00, 0x00, bitmask, 0x00,
@@ -2315,8 +2313,6 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
     }
     else if (ibus->lmVariant == IBUS_LM_LCZ ||
               ibus->lmVariant == IBUS_LM_LCZ_2) {
-      // LEFT  3F 12 D0 0C [00 00 FF 50] [00 00 00 frontV] [00 dimV rearV photoV] [00 00 00] 7D
-      // RIGHT 3F 12 D0 0C [00 00 FF 80] [00 00 00 frontV] [00 dimV rearV photoV] [00 00 00] A2
       msg = {
         0x0C,
         0x00, 0x00, IBUS_LSZ_HEADLIGHT_OFF, bitmask,

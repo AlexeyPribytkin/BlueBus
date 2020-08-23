@@ -210,6 +210,7 @@
 #define IBUS_LCM_BLINKER_PSG_E46 0x80
 #define IBUS_LSZ_HEADLIGHT_OFF 0xff
 
+// Ident (0x00) parameter offsets
 #define IBUS_LM_CI_ID_OFFSET 9
 #define IBUS_LM_DI_ID_OFFSET 10
 // Status (0x0b) parameter offsets
