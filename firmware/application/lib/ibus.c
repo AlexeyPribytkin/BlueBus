@@ -2308,7 +2308,7 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
       // RIGHT 3F 0F D0 0C [00 00 40 00] [00 00 00 00] [00 dimV lwrV 00] 8F
       msg = {
         0x0C,
-        0x00, 0x00, bitmask, 0x00
+        0x00, 0x00, bitmask, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, ibus->lmDimmerVoltage, ibus->lmLoadRearVoltage, 0x00
       };
@@ -2324,6 +2324,7 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
         0x00, ibus->lmDimmerVoltage, ibus->lmLoadRearVoltage, ibus->lmPhotoVoltage
         0x00, 0x00, 0x00
       };
+    }
     if(sizeof(msg) != 0) {
       IBusSendCommand(
           ibus,
