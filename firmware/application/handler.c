@@ -1139,27 +1139,27 @@ void HandlerIBusLCMLightStatus(void *ctx, unsigned char *pkt)
         unsigned char lightStatus = pkt[4];
         if (context->lightControlStatus.lightStatus == HANDLER_LCM_STATUS_BLINKER_OFF) {
             context->lightControlStatus.blinkCount = 2;
-            if (CHECK_BIT(lightStatus, IBUS_LCM_DRV_SIG_BIT) != 0 &&
-                CHECK_BIT(lightStatus, IBUS_LCM_PSG_SIG_BIT) == 0
+            if (CHECK_BIT(lightStatus, IBUS_LM_LEFT_SIG_BIT) != 0 &&
+                CHECK_BIT(lightStatus, IBUS_LM_RIGHT_SIG_BIT) == 0
             ) {
                 context->lightControlStatus.drvBlinker = 1;
                 context->lightControlStatus.lightStatus = HANDLER_LCM_STATUS_BLINKER_ON;
-                IBusCommandLCMEnableBlinker(context->ibus, IBUS_LCM_BLINKER_DRV);
-            } else if (CHECK_BIT(lightStatus, IBUS_LCM_PSG_SIG_BIT) != 0 &&
-                CHECK_BIT(lightStatus, IBUS_LCM_DRV_SIG_BIT) == 0
+                IBusCommandLCMEnableBlinker(context->ibus, IBUS_LM_BLINKER_LEFT);
+            } else if (CHECK_BIT(lightStatus, IBUS_LM_RIGHT_SIG_BIT) != 0 &&
+                CHECK_BIT(lightStatus, IBUS_LM_LEFT_SIG_BIT) == 0
             ) {
                 context->lightControlStatus.psgBlinker = 1;
                 context->lightControlStatus.lightStatus = HANDLER_LCM_STATUS_BLINKER_ON;
-                IBusCommandLCMEnableBlinker(context->ibus, IBUS_LCM_BLINKER_PSG);
+                IBusCommandLCMEnableBlinker(context->ibus, IBUS_LM_BLINKER_RIGHT);
             }
         } else if (context->lightControlStatus.drvBlinker == 1) {
-            if (CHECK_BIT(lightStatus, IBUS_LCM_PSG_SIG_BIT) != 0 ||
+            if (CHECK_BIT(lightStatus, IBUS_LM_RIGHT_SIG_BIT) != 0 ||
                 context->lightControlStatus.blinkCount == blinkCount
             ) {
                 // Reset ourselves once the signal is off so we do not
                 // reactivate and signal in increments of `blinkCount`
-                if (CHECK_BIT(lightStatus, IBUS_LCM_DRV_SIG_BIT) == 0) {
                     context->lightControlStatus.drvBlinker = 0;
+                if (CHECK_BIT(lightStatus, IBUS_LM_LEFT_SIG_BIT) == 0) {
                     context->lightControlStatus.lightStatus = HANDLER_LCM_STATUS_BLINKER_OFF;
                 }
                 if (context->lightControlStatus.triggerStatus == HANDLER_LCM_TRIGGER_ON) {
@@ -1169,13 +1169,13 @@ void HandlerIBusLCMLightStatus(void *ctx, unsigned char *pkt)
                 context->lightControlStatus.blinkCount++;
             }
         } else if (context->lightControlStatus.psgBlinker == 1) {
-            if (CHECK_BIT(lightStatus, IBUS_LCM_DRV_SIG_BIT) != 0 ||
+            if (CHECK_BIT(lightStatus, IBUS_LM_LEFT_SIG_BIT) != 0 ||
                 context->lightControlStatus.blinkCount == blinkCount
             ) {
                 // Reset ourselves once the signal is off so we do not
                 // reactivate and signal in increments of `blinkCount`
-                if (CHECK_BIT(lightStatus, IBUS_LCM_PSG_SIG_BIT) == 0) {
                     context->lightControlStatus.psgBlinker = 0;
+                if (CHECK_BIT(lightStatus, IBUS_LM_RIGHT_SIG_BIT) == 0) {
                     context->lightControlStatus.lightStatus = HANDLER_LCM_STATUS_BLINKER_OFF;
                 }
                 if (context->lightControlStatus.triggerStatus == HANDLER_LCM_TRIGGER_ON) {

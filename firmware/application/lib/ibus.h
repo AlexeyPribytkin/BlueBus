@@ -197,17 +197,13 @@
 #define IBUS_LCM_LIGHT_STATUS 0x5B
 #define IBUS_LCM_DIMMER_STATUS 0x5C
 #define IBUS_LCM_IO_STATUS 0x90
-#define IBUS_LCM_E46_DRV_SIG_BIT 5
-#define IBUS_LCM_E46_PSG_SIG_BIT 6
-#define IBUS_LCM_E46_BLINKER_DRV 0x50
-#define IBUS_LCM_E46_BLINKER_PSG 0x80
 
-#define IBUS_LCM_DRV_SIG_BIT 5
-#define IBUS_LCM_PSG_SIG_BIT 6
-#define IBUS_LCM_BLINKER_DRV 0x80
-#define IBUS_LCM_BLINKER_PSG 0x40
-#define IBUS_LCM_BLINKER_DRV_E46 0x50
-#define IBUS_LCM_BLINKER_PSG_E46 0x80
+#define IBUS_LM_BLINKER_LEFT 1    // PN convention, odd = left
+#define IBUS_LM_BLINKER_RIGHT 2   // PN convention, even = right
+
+// Lamp Status (0x5b)
+#define IBUS_LM_LEFT_SIG_BIT 5
+#define IBUS_LM_RIGHT_SIG_BIT 6
 #define IBUS_LSZ_HEADLIGHT_OFF 0xff
 
 // Ident (0x00) parameter offsets
