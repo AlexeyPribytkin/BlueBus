@@ -198,14 +198,14 @@
 #define IBUS_LCM_DIMMER_STATUS 0x5C
 #define IBUS_LCM_IO_STATUS 0x90
 
-#define IBUS_LM_BLINKER_LEFT 1    // PN convention, odd = left
-#define IBUS_LM_BLINKER_RIGHT 2   // PN convention, even = right
-
 // Lamp Status (0x5b)
 #define IBUS_LM_LEFT_SIG_BIT 5
 #define IBUS_LM_RIGHT_SIG_BIT 6
 
 // LM diagnostics activate (0x0c)
+#define IBUS_LM_BLINKER_LEFT 1    // PN convention, odd = left
+#define IBUS_LM_BLINKER_RIGHT 2   // PN convention, even = right
+
 // LME38
 #define IBUS_LME38_BLINKER_LEFT 0x01    // byte 0
 #define IBUS_LME38_BLINKER_RIGHT 0x02   // byte 0

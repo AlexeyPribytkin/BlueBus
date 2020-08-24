@@ -2227,7 +2227,7 @@ void IBusCommandLCMTurnRight(IBus_t *ibus)
 /**
  * IBusCommandLCMEnableBlinker()
  *     Description:
- *        Light module diagnostics activate swith turn
+ *        Light module diagnostics: activate turn switch L/R
  *     Params:
  *         IBus_t *ibus - The pointer to the IBus_t object
  *         unsigned char blinker_side - left or right blinker
@@ -2240,8 +2240,6 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
 
     if (ibus->lmVariant == IBUS_LM_LME38)
     {
-      // S_BLK_L	0	0x01	switch left turn
-      // S_BLK_R	0	0x02	switch right turn
       switch (blinker_side) {
         case IBUS_LM_BLINKER_LEFT:
           blinker = IBUS_LME38_BLINKER_LEFT;
@@ -2270,10 +2268,6 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
     else if (ibus->lmVariant == IBUS_LM_LCM ||
               ibus->lmVariant == IBUS_LM_LCM_A)
     {
-      // S2_BLK_R,0,0x40	S2_BLK_R	0	0x40	switch No.2 right turn
-      // S2_BLK_L,0,0x80	S2_BLK_L	0	0x80	switch No.2 left turn
-      // S1_BLK_L,1,0x01	S1_BLK_L	1	0x01	switch No.1 left turn
-      // S1_BLK_R,1,0x02	S1_BLK_R	1	0x02	switch No.1 right turn
       switch (blinker_side) {
         case IBUS_LM_BLINKER_LEFT:
           blinker = IBUS_LCM_BLINKER_LEFT;
