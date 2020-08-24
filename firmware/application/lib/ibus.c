@@ -2242,6 +2242,30 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
     {
       // S_BLK_L	0	0x01	switch left turn
       // S_BLK_R	0	0x02	switch right turn
+      switch (blinker_side) {
+        case IBUS_LM_BLINKER_LEFT:
+          blinker = IBUS_LME38_BLINKER_LEFT;
+          break;
+        case IBUS_LM_BLINKER_RIGHT:
+          blinker = IBUS_LME38_BLINKER_RIGHT;
+          break;
+      }
+      // No LWR load sensor/HVAC pot voltage for LME38
+      msg = {
+        IBUS_CMD_DIA_JOB_REQUEST,
+        blinker,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        ibus->lmDimmerVoltage,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+      };
     }
     else if (ibus->lmVariant == IBUS_LM_LCM ||
               ibus->lmVariant == IBUS_LM_LCM_A)
@@ -2250,6 +2274,31 @@ void IBusCommandLCMEnableBlinker(IBus_t *ibus, unsigned char blinker_side) {
       // S2_BLK_L,0,0x80	S2_BLK_L	0	0x80	switch No.2 left turn
       // S1_BLK_L,1,0x01	S1_BLK_L	1	0x01	switch No.1 left turn
       // S1_BLK_R,1,0x02	S1_BLK_R	1	0x02	switch No.1 right turn
+      switch (blinker_side) {
+        case IBUS_LM_BLINKER_LEFT:
+          blinker = IBUS_LCM_BLINKER_LEFT;
+          break;
+        case IBUS_LM_BLINKER_RIGHT:
+          blinker = IBUS_LCM_BLINKER_RIGHT;
+          break;
+      }
+      // This is an issue! I'm not sure what differentiates S1 and S2.
+      // It's meaningful enough a distinction that it's displayed in INPA.
+      msg = {
+        IBUS_CMD_DIA_JOB_REQUEST,
+        0x00,     // S2_BLK_L, S2_BLK_R
+        blinker,  // S1_BLK_L, S1_BLK_R
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        ibus->lmDimmerVoltage,
+        ibus->lmLoadRearVoltage,
+        0x00
+      };
     }
     else if (ibus->lmVariant == IBUS_LM_LCM_II ||
               ibus->lmVariant == IBUS_LM_LCM_III ||

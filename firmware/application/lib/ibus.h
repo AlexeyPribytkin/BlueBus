@@ -206,8 +206,16 @@
 #define IBUS_LM_RIGHT_SIG_BIT 6
 
 // LM diagnostics activate (0x0c)
+// LME38
 #define IBUS_LME38_BLINKER_LEFT 0x01    // byte 0
 #define IBUS_LME38_BLINKER_RIGHT 0x02   // byte 0
+
+// LCM, LCM_A
+// Different bytes! Update the blinker msg if alternating.
+// #define IBUS_LCM_BLINKER_LEFT 0x80   // byte 0 (S2_BLK_L	switch No.2 left turn)
+// #define IBUS_LCM_BLINKER_RIGHT 0x40  // byte 0 (S2_BLK_R	switch No.2 right turn)
+#define IBUS_LCM_BLINKER_LEFT 0x01      // byte 1 (S1_BLK_L	switch No.1 left turn)
+#define IBUS_LCM_BLINKER_RIGHT 0x02     // byte 1 (S1_BLK_R	switch No.1 right turn)
 
 // LCM_II, LCM_III, LCM_IV
 #define IBUS_LCM_II_BLINKER_LEFT 0x80    // byte 2
