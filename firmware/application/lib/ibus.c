@@ -290,6 +290,14 @@ static void IBusHandleLCMMessage(IBus_t *ibus, unsigned char *pkt)
         EventTriggerCallback(IBusEvent_LCMDimmerStatus, pkt);
     } else if (pkt[IBUS_PKT_DST] == IBUS_DEVICE_DIA &&
                pkt[IBUS_PKT_CMD] == IBUS_CMD_DIA_DIAG_RESPONSE &&
+               pkt[IBUS_PKT_LEN] == 0x19
+    ) {
+        // LME38 has unique status. It's shorter, and different mapping.
+        // Length is an (educated) guess based on number of bytes required to
+        // populate the job results.
+        ibus->lmDimmerVoltage = pkt[IBUS_LME38_IO_DIMMER_OFFSET];
+    } else if (pkt[IBUS_PKT_DST] == IBUS_DEVICE_DIA &&
+               pkt[IBUS_PKT_CMD] == IBUS_CMD_DIA_DIAG_RESPONSE &&
                pkt[IBUS_PKT_LEN] == 0x23
     ) {
         // Status reply length and mapping is the same for LCM and LSZ variants.

@@ -235,6 +235,9 @@
 #define IBUS_LM_IO_DIMMER_OFFSET 19
 #define IBUS_LM_IO_LOAD_REAR_OFFSET 20
 #define IBUS_LM_IO_PHOTO_OFFSET 22
+// LME38 has unique mapping. Spoilt first child.
+#define IBUS_LME38_IO_DIMMER_OFFSET 22
+
 // Light Module variants
 #define IBUS_LM_LME38 1
 #define IBUS_LM_LCM 2
