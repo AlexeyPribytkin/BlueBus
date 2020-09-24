@@ -134,15 +134,8 @@ void UtilsNormalizeText(char *string, const char *input)
         } else if (unicodeChar > 0xC2BF) {
             char * transStr = UtilsTransliterateUnicodeToASCII(unicodeChar);
             transStrLength = strlen(transStr);
-            if (transStrLength != 0) {
-                for (transIdx = 0; transIdx < transStrLength; transIdx++) {
-                    string[strIdx++] = (char)transStr[transIdx];
-                }
-            } else {
-                char transChar = UtilsTranslateCyrillicUnicodeToASCII(unicodeChar);
-                if (transChar != 0) {
-                    string[strIdx++] = transChar;
-                }
+            for (transIdx = 0; transIdx < transStrLength; transIdx++) {
+                string[strIdx++] = (char)transStr[transIdx];
             }
         }
     }
@@ -387,6 +380,344 @@ char * UtilsTransliterateUnicodeToASCII(uint32_t input)
         case UTILS_CHAR_LATIN_SMALL_CAPITAL_R:
             return "R";
             break;
+        case UTILS_CHAR_CYRILLIC_BY_UA_CAPITAL_I:
+        case UTILS_CHAR_CYRILLIC_CAPITAL_YI: {
+            char s[] = { 'I', '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_A: {
+            char s[] = { 192, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_BE: {
+            char s[] = { 193, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_VE: {
+            char s[] = { 194, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_GHE: {
+            char s[] = { 195, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_DE: {
+            char s[] = { 196, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_IO:
+        case UTILS_CHAR_CYRILLIC_UA_CAPITAL_IE:
+        case UTILS_CHAR_CYRILLIC_CAPITAL_YE: {
+            char s[] = { 197, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_ZHE: {
+            char s[] = { 198, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_ZE: {
+            char s[] = { 199, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_I: {
+            char s[] = { 200, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_SHORT_I: {
+            char s[] = { 201, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_KA: {
+            char s[] = { 202, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_EL: {
+            char s[] = { 203, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_EM: {
+            char s[] = { 204, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_EN: {
+            char s[] = { 205, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_O: {
+            char s[] = { 206, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_PE: {
+            char s[] = { 207, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_ER: {
+            char s[] = { 208, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_ES: {
+            char s[] = { 209, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_TE: {
+            char s[] = { 210, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_U:
+        case UTILS_CHAR_CYRILLIC_CAPITAL_SHORT_U: {
+            char s[] = { 211, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_EF: {
+            char s[] = { 212, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_HA: {
+            char s[] = { 213, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_TSE: {
+            char s[] = { 214, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_CHE: {
+            char s[] = { 215, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_SHA: {
+            char s[] = { 216, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_SCHA: {
+            char s[] = { 217, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_HARD_SIGN: {
+            char s[] = { 218, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_YERU: {
+            char s[] = { 219, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_SOFT_SIGN: {
+            char s[] = { 220, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_E: {
+            char s[] = { 221, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_YU: {
+            char s[] = { 222, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_CAPITAL_YA: {
+            char s[] = { 223, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_A: {
+            char s[] = { 224, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_BE: {
+            char s[] = { 225, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_VE: {
+            char s[] = { 226, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_GHE: {
+            char s[] = { 227, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_DE: {
+            char s[] = { 228, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_IE:
+        case UTILS_CHAR_CYRILLIC_SMALL_IO:
+        case UTILS_CHAR_CYRILLIC_UA_SMALL_IE: {
+            char s[] = { 229, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_ZHE: {
+            char s[] = { 230, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_ZE: {
+            char s[] = { 231, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_I: {
+            char s[] = { 232, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_SHORT_I: {
+            char s[] = { 233, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_KA: {
+            char s[] = { 234, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_EL: {
+            char s[] = { 235, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_EM: {
+            char s[] = { 236, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_EN: {
+            char s[] = { 237, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_O: {
+            char s[] = { 238, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_PE: {
+            char s[] = { 239, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_ER: {
+            char s[] = { 240, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_ES: {
+            char s[] = { 241, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_TE: {
+            char s[] = { 242, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_U:
+        case UTILS_CHAR_CYRILLIC_SMALL_SHORT_U: {
+            char s[] = { 243, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_EF: {
+            char s[] = { 244, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_HA: {
+            char s[] = { 245, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_TSE: {
+            char s[] = { 246, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_CHE: {
+            char s[] = { 247, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_SHA: {
+            char s[] = { 248, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_SHCHA: {
+            char s[] = { 249, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_LEFT_HARD_SIGN: {
+            char s[] = { 250, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_YERU: {
+            char s[] = { 251, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_SOFT_SIGN: {
+            char s[] = { 252, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_E: {
+            char s[] = { 253, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_YU: {
+            char s[] = { 254, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_SMALL_YA: {
+            char s[] = { 255, '\0' };
+            return s;
+        }
+            break;
+        case UTILS_CHAR_CYRILLIC_BY_UA_SMALL_I:
+        case UTILS_CHAR_CYRILLIC_SMALL_YI: {
+            char s[] = { 'i', '\0' };
+            return s;
+        }
+            break;
         case UTILS_CHAR_LEFT_SINGLE_QUOTATION_MARK:
             return "'";
             break;
@@ -395,230 +726,6 @@ char * UtilsTransliterateUnicodeToASCII(uint32_t input)
             break;
         default:
             return "";
-            break;
-    }
-}
-
-/**
- * TransliterateUnicodeToExtendedASCII()
- *     Description:
- *         Translate Cyrillic Unicode character to the corresponding Extended ASCII char.
- *     Params:
- *         uint32_t - Representation of the Cyrillic Unicode character
- *     Returns:
- *         char - Corresponding Extended ASCII characters
- */
-char UtilsTranslateCyrillicUnicodeToASCII(uint32_t input) 
-{
-    switch (input) {
-        case UTILS_CHAR_CYRILLIC_BY_UA_CAPITAL_I:
-        case UTILS_CHAR_CYRILLIC_CAPITAL_YI:
-            return 'I';
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_A:
-            return 192;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_BE:
-            return 193;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_VE:
-            return 194;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_GHE:
-            return 195;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_DE:
-            return 196;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_IO:
-        case UTILS_CHAR_CYRILLIC_UA_CAPITAL_IE:
-        case UTILS_CHAR_CYRILLIC_CAPITAL_YE:
-            return 197;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_ZHE:
-            return 198;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_ZE:
-            return 199;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_I:
-            return 200;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_SHORT_I:
-            return 201;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_KA:
-            return 202;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_EL:
-            return 203;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_EM:
-            return 204;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_EN:
-            return 205;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_O:
-            return 206;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_PE:
-            return 207;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_ER:
-            return 208;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_ES:
-            return 209;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_TE:
-            return 210;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_U:
-        case UTILS_CHAR_CYRILLIC_CAPITAL_SHORT_U:
-            return 211;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_EF:
-            return 212;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_HA:
-            return 213;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_TSE:
-            return 214;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_CHE:
-            return 215;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_SHA:
-            return 216;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_SCHA:
-            return 217;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_HARD_SIGN:
-            return 218;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_YERU:
-            return 219;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_SOFT_SIGN:
-            return 220;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_E:
-            return 221;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_YU:
-            return 222;
-            break;
-        case UTILS_CHAR_CYRILLIC_CAPITAL_YA:
-            return 223;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_A:
-            return 224;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_BE:
-            return 225;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_VE:
-            return 226;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_GHE:
-            return 227;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_DE:
-            return 228;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_IE:
-        case UTILS_CHAR_CYRILLIC_SMALL_IO:
-        case UTILS_CHAR_CYRILLIC_UA_SMALL_IE:
-            return 229;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_ZHE:
-            return 230;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_ZE:
-            return 231;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_I:
-            return 232;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_SHORT_I:
-            return 233;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_KA:
-            return 234;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_EL:
-            return 235;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_EM:
-            return 236;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_EN:
-            return 237;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_O:
-            return 238;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_PE:
-            return 239;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_ER:
-            return 240;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_ES:
-            return 241;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_TE:
-            return 242;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_U:
-        case UTILS_CHAR_CYRILLIC_SMALL_SHORT_U:
-            return 243;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_EF:
-            return 244;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_HA:
-            return 245;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_TSE:
-            return 246;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_CHE:
-            return 247;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_SHA:
-            return 248;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_SHCHA:
-            return 249;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_LEFT_HARD_SIGN:
-            return 250;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_YERU:
-            return 251;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_SOFT_SIGN:
-            return 252;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_E:
-            return 253;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_YU:
-            return 254;
-            break;
-        case UTILS_CHAR_CYRILLIC_SMALL_YA:
-            return 255;
-            break;
-        case UTILS_CHAR_CYRILLIC_BY_UA_SMALL_I:
-        case UTILS_CHAR_CYRILLIC_SMALL_YI:
-            return 'i';
-            break;
-        default:
-            return 0;
             break;
     }
 }
