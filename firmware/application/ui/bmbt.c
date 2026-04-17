@@ -623,13 +623,21 @@ static void BMBTHeaderWriteDeviceName(BMBTContext_t *context, char *text)
  *     Returns:
  *         void
  */
-
 static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateType)
 {
     uint8_t tempDisplayConfig = ConfigGetTempDisplay();
+        
+    if (
+        tempDisplayConfig == CONFIG_SETTING_OFF ||
+        context->status.displayMode != BMBT_DISPLAY_ON
+    ) {
+        return;
+    }
+    
     int16_t tempValue = IBUS_TEMP_UNSET;
     uint8_t units = (ConfigGetTempUnit() == CONFIG_SETTING_TEMP_FAHRENHEIT) ? 'F' : 'C';
     char temperature[8] = {0};
+    
     if (tempDisplayConfig == CONFIG_SETTING_TEMP_AMBIENT) {
         if (
             updateType == IBUS_SENSOR_VALUE_AMBIENT_TEMP ||
@@ -637,7 +645,6 @@ static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateTyp
             updateType == IBUS_SENSOR_VALUE_TEMP_UNIT
         ) {
             if (context->ibus->ambientTemperatureCalculated[0] != 0) {
-                tempValue = 0;
                 snprintf(
                     temperature,
                     8,
@@ -649,8 +656,7 @@ static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateTyp
                 tempValue = context->ibus->ambientTemperature;
             }
         }
-    }
-    if (tempDisplayConfig == CONFIG_SETTING_TEMP_COOLANT) {
+    } else if (tempDisplayConfig == CONFIG_SETTING_TEMP_COOLANT) {
         if(
             updateType == IBUS_SENSOR_VALUE_COOLANT_TEMP ||
             updateType == IBUS_SENSOR_VALUE_TEMP_UNIT
@@ -659,8 +665,7 @@ static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateTyp
                 tempValue = context->ibus->coolantTemperature;
             }
         }
-    }
-    if (tempDisplayConfig == CONFIG_SETTING_TEMP_OIL) {
+    } else if (tempDisplayConfig == CONFIG_SETTING_TEMP_OIL) {
         if(
             updateType == IBUS_SENSOR_VALUE_OIL_TEMP ||
             updateType == IBUS_SENSOR_VALUE_TEMP_UNIT
@@ -670,29 +675,28 @@ static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateTyp
             }
         }
     }
-    if (
-        tempValue != IBUS_TEMP_UNSET &&
-        tempDisplayConfig != CONFIG_SETTING_OFF &&
-        context->status.displayMode == BMBT_DISPLAY_ON
-    ) {
-        if (strlen(temperature) == 0) {
-            if (units == 'F') {
-                tempValue = tempValue * 1.8 + 32 + 0.5;
-            }
-            if (tempDisplayConfig == CONFIG_SETTING_TEMP_AMBIENT) {
-                if (units == 'F') {
-                    snprintf(temperature, 7, "%+d\xB0%c", tempValue, units);
-                } else {
-                    snprintf(temperature, 8, "%+d.0\xB0%c", tempValue, units);
-                }
-            } else if (tempValue > 0){
-                snprintf(temperature, 6, "%d\xB0%c", tempValue, units);
-            } else {
-                return;
-            }
+    
+    if (temperature[0] == 0) {
+        if (tempValue == IBUS_TEMP_UNSET) {
+            return;
         }
-        IBusCommandGTWriteZone(context->ibus, BMBT_HEADER_TEMPS, temperature);
+    
+        if (units == 'F') {
+            tempValue = tempValue * 1.8 + 32 + 0.5;
+        }
+        
+        if (tempDisplayConfig == CONFIG_SETTING_TEMP_AMBIENT) {
+            if (units == 'F') {
+                snprintf(temperature, 7, "%+d\xB0%c", tempValue, units);
+            } else {
+                snprintf(temperature, 8, "%+d.0\xB0%c", tempValue, units);
+            }
+        } else {
+            snprintf(temperature, 6, "%d\xB0%c", tempValue, units);
+        }
     }
+    
+    IBusCommandGTWriteZone(context->ibus, BMBT_HEADER_TEMPS, temperature);
 }
 
 
@@ -707,10 +711,8 @@ static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateTyp
  */
 static void BMBTHeaderWriteSpeed(BMBTContext_t *context)
 {
-    uint8_t speed = context->speed;
-    if (ConfigGetDistUnit() == 1) {
-        speed = (speed * 5) / 8;
-    }
+    // Speed has already been given in the correct units
+    uint16_t speed = context->ibus->vehicleSpeed;
     char speedStr[5] = {0};
     snprintf(speedStr, 5, "%3d", speed);
     IBusCommandGTWriteZone(context->ibus, BMBT_HEADER_SPEED, speedStr);
@@ -1022,9 +1024,17 @@ static void BMBTMenuDeviceSelection(BMBTContext_t *context)
         if (devicesCount > 0) {
             devicesCount--;
         }
-        char deviceName[15] = {0x20};
-        memcpy(deviceName, dev->deviceName, 14);
+        
+        char deviceName[15];
+        memset(deviceName, 0x20, sizeof(deviceName));
         deviceName[14] = '\0';
+        
+        size_t len = strlen(dev->deviceName);
+        if (len > 14) {
+            len = 14;
+        }
+        memcpy(deviceName, dev->deviceName, len);
+        
         // Add a space and asterisks to the end of the device name
         // if it's the currently selected device
         if (idx == context->bt->activeDevice.deviceIndex) {
@@ -3182,19 +3192,19 @@ void BMBTIBusGTChangeUIRequest(void *ctx, uint8_t *pkt)
 void BMBTIKESpeedRPMUpdate(void *ctx, uint8_t *pkt)
 {
     BMBTContext_t *context = (BMBTContext_t *) ctx;
-    uint8_t speed = pkt[IBUS_PKT_DB1] * 2;
-    uint32_t now = TimerGetMillis();
 
     if (
         ConfigGetSetting(CONFIG_SETTING_TRUE_SPEED) == CONFIG_SETTING_ON &&
         context->status.displayMode == BMBT_DISPLAY_ON
     ) {
-        context->speed = speed;
         BMBTHeaderWriteSpeed(context);
         BMBTGTFlushHeaderWrite(context);
     }
-
+    
+    uint32_t now = TimerGetMillis();
+    uint16_t speed = context->ibus->vehicleSpeed;
     uint8_t autozoom = ConfigGetSetting(CONFIG_SETTING_COMFORT_AUTOZOOM);
+    
     if (autozoom != CONFIG_SETTING_OFF) {
         uint8_t zoomLevel;
 

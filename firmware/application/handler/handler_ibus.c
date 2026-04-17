@@ -937,7 +937,7 @@ void HandlerIBusIKESpeedRPMUpdate(void *ctx, uint8_t *pkt)
 {
     HandlerContext_t *context = (HandlerContext_t *) ctx;
     uint8_t comfortLock = ConfigGetComfortLock();
-    uint16_t speed = pkt[IBUS_PKT_DB1] * 2;
+    uint16_t speed = context->ibus->vehicleSpeed;
     if (comfortLock != CONFIG_SETTING_OFF && context->gmState.doorsLocked == 0) {
         if (
             (comfortLock == CONFIG_SETTING_COMFORT_LOCK_10KM && speed >= 10) ||

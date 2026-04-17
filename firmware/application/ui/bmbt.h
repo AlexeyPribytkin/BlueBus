@@ -178,7 +178,6 @@ typedef struct BMBTContext_t {
     uint8_t menuPressTaskId;
     uint8_t menu;
     uint8_t dspMode;
-    uint8_t speed;
     uint8_t navZoom: 4;
     uint8_t navMapShown: 1;
     uint8_t navSilenced: 1;

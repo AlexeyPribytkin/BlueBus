@@ -540,6 +540,7 @@
 #define IBUS_IKE_GEAR_PARK 0x0B
 #define IBUS_IKE_GEAR_REVERSE 0x01
 #define IBUS_IKE_GEAR_NEUTRAL 0x07
+#define IBUS_IKE_GEAR_DRIVE 0x08
 #define IBUS_IKE_GEAR_FIRST 0x10
 #define IBUS_IKE_GEAR_SECOND 0x06
 #define IBUS_IKE_GEAR_THIRD 0x0D
@@ -717,6 +718,8 @@ typedef struct IBus_t {
     uint8_t oilTemperature;
     uint8_t batteryVoltage;
     uint8_t vehicleType;
+    uint16_t vehicleSpeed;
+    uint16_t vehicleRPM;
     uint16_t vehicleRange;
     uint8_t videoSource: 2;
     IBusModuleStatus_t moduleStatus;

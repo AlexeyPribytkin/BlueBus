@@ -396,7 +396,16 @@ static void IBusHandleIKEMessage(IBus_t *ibus, uint8_t *pkt)
         ibus->vehicleType = IBusGetVehicleType(pkt);
         EventTriggerCallback(IBUS_EVENT_IKE_VEHICLE_CONFIG, pkt);
     } else if (pkt[IBUS_PKT_CMD] == IBUS_CMD_IKE_SPEED_RPM_UPDATE) {
-        EventTriggerCallback(IBUS_EVENT_IKE_SPEED_RPM_UPDATE, pkt);
+        uint16_t speed = pkt[IBUS_PKT_DB1] * 2;
+        uint16_t rpm = pkt[IBUS_PKT_DB2] * 100;
+        // Do not update the system if the value is the same
+        if (ibus->vehicleSpeed != speed || ibus->vehicleRPM != rpm) {
+            ibus->vehicleSpeed = speed;
+            ibus->vehicleRPM = rpm;
+
+            // pkt can be removed from the event callback
+            EventTriggerCallback(IBUS_EVENT_IKE_SPEED_RPM_UPDATE, pkt);
+        }
     } else if (pkt[IBUS_PKT_CMD] == IBUS_CMD_IKE_TEMP_UPDATE) {
         // Do not update the system if the value is the same
         if (ibus->coolantTemperature != pkt[IBUS_PKT_DB2] && pkt[IBUS_PKT_DB2] <= 0x7F) {
@@ -417,7 +426,7 @@ static void IBusHandleIKEMessage(IBus_t *ibus, uint8_t *pkt)
             property == IBUS_IKE_TEXT_TEMPERATURE &&
             pkt[IBUS_PKT_LEN] >= 7 &&
             pkt[IBUS_PKT_LEN] <= 11
-       ) {
+        ) {
 
             uint8_t *temp = pkt + 6;
             uint8_t size = pkt[IBUS_PKT_LEN] - 5;

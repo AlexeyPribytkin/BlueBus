@@ -71,7 +71,6 @@ void MenuSingleLineInit(
     context->btDeviceIndex = 0;
     context->settingMode = MENU_SINGLELINE_SETTING_MODE_SCROLL_SETTINGS;
     context->uiMode = ConfigGetUIMode();
-    context->vehicleSpeed = 0;
     // Event Registrations
     EventRegisterCallback(
         IBUS_EVENT_SENSOR_VALUE_UPDATE,
@@ -180,11 +179,8 @@ void MenuSingleLineIBusSpeedUpdate(void *ctx, uint8_t *pkt)
     if (context->activeView != MENU_SINGLELINE_VIEW_OBC) {
         return;
     }
-    uint16_t speed = pkt[IBUS_PKT_DB1] * 2;
-    if (context->vehicleSpeed != speed) {
-        context->vehicleSpeed = speed;
-        MenuSingleLineOBC(context);
-    }
+    
+    MenuSingleLineOBC(context);
 }
 
 /**
@@ -204,6 +200,7 @@ void MenuSingleLineOBC(MenuSingleLineContext_t *context)
 
     uint8_t coolant = context->ibus->coolantTemperature;
     uint8_t oil = context->ibus->oilTemperature;
+    uint16_t speed = context->ibus->vehicleSpeed;
 
     // Convert to Fahrenheit if configured
     if (ConfigGetTempUnit() == CONFIG_SETTING_TEMP_FAHRENHEIT) {
@@ -217,12 +214,12 @@ void MenuSingleLineOBC(MenuSingleLineContext_t *context)
     if (context->uiMode == CONFIG_UI_MID) {
         // MID: 24 chars max
         if (oil != 0) {
-            snprintf(text, 24, "C:%d O:%d S:%u", coolant, oil, context->vehicleSpeed);
+            snprintf(text, 24, "C:%d O:%d S:%u", coolant, oil, speed);
         } else {
-            snprintf(text, 24, "Coolant:%d Speed:%u", coolant, context->vehicleSpeed);
+            snprintf(text, 24, "Coolant:%d Speed:%u", coolant, speed);
         }
     } else {
-        snprintf(text, 12, "C:%d S:%u", coolant, context->vehicleSpeed);
+        snprintf(text, 12, "C:%d S:%u", coolant, speed);
     }
     MenuSingleLineSetDisplayText(
         context,

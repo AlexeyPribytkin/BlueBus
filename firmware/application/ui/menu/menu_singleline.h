@@ -71,7 +71,6 @@ typedef struct MenuSingleLineContext_t {
     uint8_t settingValue;
     uint8_t settingMode;
     uint8_t btDeviceIndex;
-    uint16_t vehicleSpeed;
 } MenuSingleLineContext_t;
 
 void MenuSingleLineInit(MenuSingleLineContext_t *, IBus_t *, BT_t*);
