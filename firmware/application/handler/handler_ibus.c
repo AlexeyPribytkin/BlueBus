@@ -64,7 +64,7 @@ void HandlerIBusInit(HandlerContext_t *context)
         context
     );
     EventRegisterCallback(
-        IBUS_EVENT_IKE_SPEED_RPM_UPDATE,
+        IBUS_EVENT_SENSOR_VALUE_UPDATE,
         &HandlerIBusIKESpeedRPMUpdate,
         context
     );
@@ -929,13 +929,18 @@ void HandlerIBusIKEIgnitionStatus(void *ctx, uint8_t *pkt)
  *         * Lock the vehicle at 20mph
  *     Params:
  *         void *ctx - The context provided at registration
- *         uint8_t *tmp - Any event data
+ *         uint8_t *type - An update type
  *     Returns:
  *         void
  */
-void HandlerIBusIKESpeedRPMUpdate(void *ctx, uint8_t *pkt)
+void HandlerIBusIKESpeedRPMUpdate(void *ctx, uint8_t *type)
 {
     HandlerContext_t *context = (HandlerContext_t *) ctx;
+    uint8_t updateType = *type;
+    if (updateType != IBUS_SENSOR_VALUE_SPEED_RPM) {
+        return;
+    }
+    
     uint8_t comfortLock = ConfigGetComfortLock();
     uint16_t speed = context->ibus->vehicleSpeed;
     if (comfortLock != CONFIG_SETTING_OFF && context->gmState.doorsLocked == 0) {

@@ -78,7 +78,7 @@ void MenuSingleLineInit(
         context
     );
     EventRegisterCallback(
-        IBUS_EVENT_IKE_SPEED_RPM_UPDATE,
+        IBUS_EVENT_SENSOR_VALUE_UPDATE,
         &MenuSingleLineIBusSpeedUpdate,
         context
     );
@@ -100,7 +100,7 @@ void MenuSingleLineDestory()
         &MenuSingleLineIBusSensorValueUpdate
     );
     EventUnregisterCallback(
-        IBUS_EVENT_IKE_SPEED_RPM_UPDATE,
+        IBUS_EVENT_SENSOR_VALUE_UPDATE,
         &MenuSingleLineIBusSpeedUpdate
     );
 }
@@ -169,12 +169,17 @@ void MenuSingleLineIBusSensorValueUpdate(void *ctx, uint8_t *type)
  *         Handle speed update events for OBC display
  *     Params:
  *         void *ctx - Pointer to the context
- *         uint8_t *pkt - Pointer to the IBus packet
+ *         uint8_t *type - Pointer to the sensor value type
  *     Returns:
  *         void
  */
-void MenuSingleLineIBusSpeedUpdate(void *ctx, uint8_t *pkt)
+void MenuSingleLineIBusSpeedUpdate(void *ctx, uint8_t *type)
 {
+    uint8_t updateType = *type;
+    if (updateType != IBUS_SENSOR_VALUE_SPEED_RPM) {
+        return;
+    }
+    
     MenuSingleLineContext_t *context = (MenuSingleLineContext_t *) ctx;
     if (context->activeView != MENU_SINGLELINE_VIEW_OBC) {
         return;

@@ -216,7 +216,7 @@ void BMBTInit(BT_t *bt, IBus_t *ibus)
         &Context
     );
     EventRegisterCallback(
-        IBUS_EVENT_IKE_SPEED_RPM_UPDATE,
+        IBUS_EVENT_SENSOR_VALUE_UPDATE,
         &BMBTIKESpeedRPMUpdate,
         &Context
     );
@@ -699,7 +699,6 @@ static void BMBTHeaderWriteTemperature(BMBTContext_t *context, uint8_t updateTyp
     IBusCommandGTWriteZone(context->ibus, BMBT_HEADER_TEMPS, temperature);
 }
 
-
 /**
  * BMBTHeaderWriteSpeed()
  *     Description:
@@ -821,6 +820,58 @@ static void BMBTMenuMain(BMBTContext_t *context)
     context->menu = BMBT_MENU_MAIN;
 }
 
+/**
+ * UtilsGetGearString()
+ *     Description:
+ *         Converts raw IKE gear value into a fixed-width 2-character string representation.
+ *         The resulting string is null-terminated.
+ 
+ *     Params:
+ *         uint8_t - Raw gear value from IKE (IBUS_IKE_GEAR_*)
+ *
+ *     Returns:
+ *         const char* - Output string (2 chars)
+ */
+static const char* UtilsGetGearString(uint8_t gear)
+{
+    switch (gear) {
+        case IBUS_IKE_GEAR_PARK:
+            return "P ";
+            break;
+        case IBUS_IKE_GEAR_REVERSE:
+            return "R ";
+            break;
+        case IBUS_IKE_GEAR_NEUTRAL:
+            return "N ";
+            break;
+        case IBUS_IKE_GEAR_DRIVE:
+            return "D ";
+            break;
+        case IBUS_IKE_GEAR_FIRST:
+            return "D1";
+            break;
+        case IBUS_IKE_GEAR_SECOND:
+            return "D2";
+            break;
+        case IBUS_IKE_GEAR_THIRD:
+            return "D3";
+            break;
+        case IBUS_IKE_GEAR_FOURTH:
+            return "D4";
+            break;
+        case IBUS_IKE_GEAR_FIFTH:
+            return "D5";
+            break;
+        case IBUS_IKE_GEAR_SIXTH:
+            return "D6";
+            break;
+        case IBUS_IKE_GEAR_NONE:
+        default:
+            return "  ";
+            break;
+    }
+}
+
 static void BMBTMenuDashboardUpdateOBCValues(BMBTContext_t *context)
 {
     if (ConfigGetSetting(CONFIG_SETTING_BMBT_DASHBOARD_OBC) == CONFIG_SETTING_OFF) {
@@ -830,20 +881,15 @@ static void BMBTMenuDashboardUpdateOBCValues(BMBTContext_t *context)
         }
         return;
     }
-    char tempUnit = 'C';
-    char ambtempstr[14] = {0};
-    char oiltempstr[14] = {0};
-    char cooltempstr[14] = {0};
-    char battstr[14] = {0};
 
-    if (ConfigGetTempUnit() == CONFIG_SETTING_TEMP_FAHRENHEIT) {
-        tempUnit = 'F';
-    }
-
+    uint16_t speed = context->ibus->vehicleSpeed;
+    uint16_t rpm = context->ibus->vehicleRPM;
     int ambtemp = context->ibus->ambientTemperature;
     int oiltemp = context->ibus->oilTemperature;
     int cooltemp = context->ibus->coolantTemperature;
     uint8_t battVolt = context->ibus->batteryVoltage;
+    uint8_t gear = context->ibus->gearPosition;
+    
     if (
         ambtemp == IBUS_TEMP_UNSET &&
         context->ibus->ambientTemperatureCalculated[0] == 0x00 &&
@@ -854,7 +900,15 @@ static void BMBTMenuDashboardUpdateOBCValues(BMBTContext_t *context)
         return;
     }
 
-    if (tempUnit == 'F') {
+    char tempUnit = 'C';
+    const char *speedUnit = "km/h";
+    const char *unitPad = "";
+    
+    if (ConfigGetTempUnit() == CONFIG_SETTING_TEMP_FAHRENHEIT) {
+        tempUnit = 'F';
+        speedUnit = "mph";
+        unitPad = " ";
+        
         ambtemp = (ambtemp * 1.8 + 32 + 0.5);
         if (oiltemp > 0) {
             oiltemp = (oiltemp * 1.8 + 32 + 0.5);
@@ -863,34 +917,61 @@ static void BMBTMenuDashboardUpdateOBCValues(BMBTContext_t *context)
             cooltemp = (cooltemp * 1.8 + 32 + 0.5);
         }
     }
-    if (battVolt > 0) {
-        snprintf(battstr, 14, "B:%d.%dv", battVolt / 10, battVolt % 10);
-    }
+
     if (context->ibus->gtVersion >= IBUS_GT_MKIV_STATIC) {
-        char temperature[29] = {0};
-        if (context->ibus->ambientTemperatureCalculated[0] != 0x00) {
-            snprintf(ambtempstr, 8, "A:%s", context->ibus->ambientTemperatureCalculated);
-        } else if (context->ibus->ambientTemperature != IBUS_TEMP_UNSET) {
-            snprintf(ambtempstr, 8, "A:%+d", ambtemp);
-        }
-        if (cooltemp > 0) {
-            snprintf(cooltempstr, 7, "C:%d,", cooltemp);
-        }
-        if (battVolt > 0) {
-            IBusCommandGTWriteIndexStatic(context->ibus, 0x44, battstr);
-        } else {
-            IBusCommandGTWriteIndexStatic(context->ibus, 0x44, "\x06");
-        }
+        // 123 km/h|  D5      Temp °C
+        // 2200 rpm|13.9 V    O:  90|C:  85|A: -25
+        
+        char line1[28]; // 27 chars + null
+        const char* gearStr = UtilsGetGearString(gear);
+        
+        // Speed + Gear + Temp label 27chars
+        snprintf(line1, sizeof(line1),
+            "%s%3d %s|  %-2s       Temp \xB0%c",
+            unitPad,
+            speed,
+            speedUnit,
+            gearStr,
+            tempUnit);
+        
+        char line2[41]; // 40 chars + null
+        size_t pos = 0;
+
+        // RPM + voltage 20 chars
+        pos += snprintf(line2 + pos, sizeof(line2) - pos,
+            "%4d rpm|%2d.%d V     ",
+            rpm,
+            battVolt / 10,
+            battVolt % 10);
+
+        // Oil 6 chars
         if (oiltemp > 0) {
-            snprintf(oiltempstr, 7, "O:%d,", oiltemp);
-            snprintf(temperature, 29, "%s%s%s\xB0%c", oiltempstr, cooltempstr, ambtempstr, tempUnit);
-        } else {
-            snprintf(temperature, 29, "Temp\xB0%c: %s%s", tempUnit, cooltempstr, ambtempstr);
+            pos += snprintf(line2 + pos, sizeof(line2) - pos, "O:%3d|", oiltemp);
         }
-        IBusCommandGTWriteIndexStatic(context->ibus, 0x45, temperature);
+
+        // Coolant 5 chars
+        pos += snprintf(line2 + pos, sizeof(line2) - pos,
+            "C:%3d",
+            cooltemp);
+            
+        // Ambient 9 chars
+        if (context->ibus->ambientTemperatureCalculated[0] != 0x00) {
+            pos += snprintf(line2 + pos, sizeof(line2) - pos, "|A:%s", context->ibus->ambientTemperatureCalculated);
+        } else if (context->ibus->ambientTemperature != IBUS_TEMP_UNSET) {
+            pos += snprintf(line2 + pos, sizeof(line2) - pos, "|A:%+d", ambtemp);
+        }
+        
+        IBusCommandGTWriteIndexStatic(context->ibus, 0x44, line1);
+        IBusCommandGTWriteIndexStatic(context->ibus, 0x45, line2);
     } else {
+        char ambtempstr[14] = {0};
+        char oiltempstr[14] = {0};
+        char cooltempstr[14] = {0};
+        char battstr[14] = {0};
         uint8_t currentIdx = 5;
+        
         if (battVolt > 0) {
+            snprintf(battstr, 14, "B:%d.%dv", battVolt / 10, battVolt % 10);
             IBusCommandGTWriteIndex(context->ibus, currentIdx++, battstr);
         }
         char header[9] = {0};
@@ -3185,13 +3266,18 @@ void BMBTIBusGTChangeUIRequest(void *ctx, uint8_t *pkt)
  *         Handle Map Auto Zoom as the speed changes
  *     Params:
  *         void *context - A void pointer to the BMBTContext_t struct
- *         uint8_t *pkt - A pointer to the data packet
+ *         uint8_t *type - The update type
  *     Returns:
  *         void
  */
-void BMBTIKESpeedRPMUpdate(void *ctx, uint8_t *pkt)
+void BMBTIKESpeedRPMUpdate(void *ctx, uint8_t *type)
 {
     BMBTContext_t *context = (BMBTContext_t *) ctx;
+    uint8_t updateType = *type;
+    
+    if (updateType != IBUS_SENSOR_VALUE_SPEED_RPM) {
+        return;
+    }
 
     if (
         ConfigGetSetting(CONFIG_SETTING_TRUE_SPEED) == CONFIG_SETTING_ON &&

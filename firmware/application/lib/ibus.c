@@ -404,7 +404,9 @@ static void IBusHandleIKEMessage(IBus_t *ibus, uint8_t *pkt)
             ibus->vehicleRPM = rpm;
 
             // pkt can be removed from the event callback
-            EventTriggerCallback(IBUS_EVENT_IKE_SPEED_RPM_UPDATE, pkt);
+            // IBUS_EVENT_IKE_SPEED_RPM_UPDATE -> IBUS_EVENT_SENSOR_VALUE_UPDATE+IBUS_SENSOR_VALUE_SPEED_RPM
+            uint8_t valueType = IBUS_SENSOR_VALUE_SPEED_RPM;
+            EventTriggerCallback(IBUS_EVENT_SENSOR_VALUE_UPDATE, &valueType);
         }
     } else if (pkt[IBUS_PKT_CMD] == IBUS_CMD_IKE_TEMP_UPDATE) {
         // Do not update the system if the value is the same
