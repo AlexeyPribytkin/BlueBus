@@ -6,6 +6,7 @@
  */
 #include "config.h"
 #include "eeprom.h"
+#include "utils.h"
 #include <stdio.h>
 
 uint8_t CONFIG_SETTING_CACHE[CONFIG_SETTING_CACHE_SIZE] = {0};
