@@ -2303,7 +2303,13 @@ void IBusCommandGTBMBTControl(IBus_t *ibus, uint8_t status)
         IBUS_CMD_GT_MONITOR_CONTROL,
         status,
     };
-    IBusSendCommand(ibus, IBUS_DEVICE_GT, IBUS_DEVICE_BMBT, msg, 2);
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+    }
+    IBusSendCommand(ibus, srcDevice, IBUS_DEVICE_BMBT, msg, 2);
 }
 
 void IBusCommandGTUpdate(IBus_t *ibus, uint8_t updateType)
@@ -2629,7 +2635,13 @@ void IBusCommandIKEGetVehicleConfig(IBus_t *ibus)
 void IBusCommandIKEOBCControl(IBus_t *ibus, uint8_t property, uint8_t control)
 {
     uint8_t controlMessage[] = {IBUS_CMD_OBC_CONTROL, property, control};
-    IBusSendCommand(ibus, IBUS_DEVICE_GT, IBUS_DEVICE_IKE, controlMessage, 3);
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+    }
+    IBusSendCommand(ibus, srcDevice, IBUS_DEVICE_IKE, controlMessage, 3);
 }
 
 /**
@@ -2667,9 +2679,15 @@ void IBusCommandIKESetTime(IBus_t *ibus, uint8_t hour, uint8_t minute)
         hour,
         minute
     };
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+    }
     IBusSendCommand(
         ibus,
-        IBUS_DEVICE_GT,
+        srcDevice,
         IBUS_DEVICE_IKE,
         msg,
         sizeof(msg)
@@ -2698,9 +2716,15 @@ void IBusCommandIKESetDate(IBus_t *ibus, uint8_t year, uint8_t mon, uint8_t day)
         mon,
         year
     };
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+    }
     IBusSendCommand(
         ibus,
-        IBUS_DEVICE_GT,
+        srcDevice,
         IBUS_DEVICE_IKE,
         msg,
         sizeof(msg)
@@ -3467,13 +3491,17 @@ void IBusCommandRADClearMenu(IBus_t *ibus)
 void IBusCommandRADDisableMenu(IBus_t *ibus)
 {
     uint8_t msg[] = {0x45, 0x02};
-    // VMs handle Audio + OBC differently. Failing to handle this will crash the VM
-    if (ibus->moduleStatus.NAV == 0) {
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+        // VMs handle Audio + OBC differently
         msg[1] = 0x03;
     }
     IBusSendCommand(
         ibus,
-        IBUS_DEVICE_GT,
+        srcDevice,
         IBUS_DEVICE_RAD,
         msg,
         sizeof(msg)
@@ -3492,13 +3520,17 @@ void IBusCommandRADDisableMenu(IBus_t *ibus)
 void IBusCommandRADEnableMenu(IBus_t *ibus)
 {
     uint8_t msg[] = {0x45, 0x00};
-    // VMs handle Audio + OBC differently. Failing to handle this will crash the VM
-    if (ibus->moduleStatus.NAV == 0) {
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+        // VMs handle Audio + OBC differently
         msg[1] = 0x01;
     }
     IBusSendCommand(
         ibus,
-        IBUS_DEVICE_GT,
+        srcDevice,
         IBUS_DEVICE_RAD,
         msg,
         sizeof(msg)
@@ -3517,9 +3549,15 @@ void IBusCommandRADEnableMenu(IBus_t *ibus)
 void IBusCommandRADExitMenu(IBus_t *ibus)
 {
     uint8_t msg[] = {0x45, 0x91};
+    // Do not source messages as the GT if the VM is present as it will
+    // give way to the Nav GT and turn the screen black
+    uint8_t srcDevice = IBUS_DEVICE_GT;
+    if (ibus->moduleStatus.VM == 1 && ibus->moduleStatus.NAV == 0) {
+        srcDevice = IBUS_DEVICE_VM;
+    }
     IBusSendCommand(
         ibus,
-        IBUS_DEVICE_GT,
+        srcDevice,
         IBUS_DEVICE_RAD,
         msg,
         sizeof(msg)
