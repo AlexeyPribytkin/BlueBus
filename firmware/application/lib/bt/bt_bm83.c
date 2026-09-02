@@ -171,6 +171,33 @@ void BM83CommandCallEnd(BT_t *bt)
 }
 
 /**
+ * BM83CommandChangeDeviceName()
+ *     Description:
+ *         Change the device name reported in the LMP name response and the
+ *         EIR inquiry response (Change_Device_Name -> 0x05). This is not a
+ *         persistent value, so it must be set every time we power on
+ *     Params:
+ *         BT_t *bt - A pointer to the module object
+ *         char *name - The device name to set
+ *     Returns:
+ *         void
+ */
+void BM83CommandChangeDeviceName(BT_t *bt, char *name)
+{
+    uint8_t nameLength = strlen(name);
+    if (nameLength > BM83_DEVICE_NAME_MAX_LEN) {
+        nameLength = BM83_DEVICE_NAME_MAX_LEN;
+    }
+    uint8_t command[BM83_DEVICE_NAME_MAX_LEN + 1] = {0};
+    command[0] = BM83_CMD_CHANGE_DEVICE_NAME;
+    uint8_t i = 0;
+    for (i = 0; i < nameLength; i++) {
+        command[i + 1] = name[i];
+    }
+    BM83SendCommand(bt, command, nameLength + 1);
+}
+
+/**
  * BM83CommandConnect()
  *     Description:
  *         Link back to a paired device (Profiles_Link_Back -> 0x17)
@@ -549,6 +576,26 @@ void BM83CommandReadLocalBDAddress(BT_t *bt)
 }
 
 /**
+ * BM83CommandReadLocalDeviceName()
+ *     Description:
+ *         Request the device name stored in the module configuration data
+ *         (Read_Local_Device_Name -> 0x10). The module replies with the
+ *         Read_Local_Device_Name_Reply (0x21) event
+ *     Params:
+ *         BT_t *bt - A pointer to the module object
+ *     Returns:
+ *         void
+ */
+void BM83CommandReadLocalDeviceName(BT_t *bt)
+{
+    uint8_t command[] = {
+        BM83_CMD_READ_LOCAL_DEVICE_NAME,
+        0x00 // Reserved
+    };
+    BM83SendCommand(bt, command, sizeof(command));
+}
+
+/**
  * BM83CommandReadPairedDevices()
  *     Description:
  *         Request the paired devices list
@@ -599,6 +646,58 @@ void BM83CommandRestore(BT_t *bt)
         BM83_CMD_MMI_ACTION_RESTORE
     };
     BM83SendCommand(bt, command, sizeof(command));
+}
+
+/**
+ * BM83CommandRestoreDefaultDeviceName()
+ *     Description:
+ *         Restore the device name in the module configuration data back to
+ *         the default set in the UI parameters
+ *         (Configure_Vendor_Parameter -> 0x35)
+ *     Params:
+ *         BT_t *bt - A pointer to the module object
+ *     Returns:
+ *         void
+ */
+void BM83CommandRestoreDefaultDeviceName(BT_t *bt)
+{
+    uint8_t command[] = {
+        BM83_CMD_CONFIGURE_VENDOR_PARAMETER,
+        BM83_CMD_VENDOR_PARAM_RESTORE_DEVICE_NAME,
+        0x00 // Option - Reserved
+    };
+    BM83SendCommand(bt, command, sizeof(command));
+}
+
+/**
+ * BM83CommandSetLocalDeviceName()
+ *     Description:
+ *         Write the device name to the module configuration data, which is
+ *         where the module sources the name used for BLE advertising and on
+ *         boot (Configure_Vendor_Parameter -> 0x35). The module rejects any
+ *         name longer than BM83_DEVICE_NAME_MAX_LEN bytes
+ *     Params:
+ *         BT_t *bt - A pointer to the module object
+ *         char *name - The device name to set
+ *     Returns:
+ *         void
+ */
+void BM83CommandSetLocalDeviceName(BT_t *bt, char *name)
+{
+    uint8_t nameLength = strlen(name);
+    if (nameLength > BM83_DEVICE_NAME_MAX_LEN) {
+        nameLength = BM83_DEVICE_NAME_MAX_LEN;
+    }
+    uint8_t command[BM83_DEVICE_NAME_MAX_LEN + 4] = {0};
+    command[0] = BM83_CMD_CONFIGURE_VENDOR_PARAMETER;
+    command[1] = BM83_CMD_VENDOR_PARAM_CHANGE_DEVICE_NAME;
+    command[2] = 0x00; // Option - Reserved
+    command[3] = nameLength;
+    uint8_t i = 0;
+    for (i = 0; i < nameLength; i++) {
+        command[i + 4] = name[i];
+    }
+    BM83SendCommand(bt, command, nameLength + 4);
 }
 
 /**
@@ -1674,6 +1773,23 @@ void BM83Process(BT_t *bt)
                     };
                     EventTriggerCallback(BT_EVENT_BTM_ADDRESS, data);
                 }
+            }
+            if (event == BM83_EVT_READ_LOCAL_DEVICE_NAME_REPLY) {
+                uint8_t nameLength = eventData[BM83_FRAME_DB0];
+                if (nameLength > BM83_DEVICE_NAME_MAX_LEN) {
+                    nameLength = BM83_DEVICE_NAME_MAX_LEN;
+                }
+                char nameData[BM83_DEVICE_NAME_MAX_LEN + 1] = {0};
+                char deviceName[BM83_DEVICE_NAME_MAX_LEN + 1] = {0};
+                for (i = 0; i < nameLength && (i + 1) < dataLength; i++) {
+                    nameData[i] = eventData[i + BM83_FRAME_DB1];
+                }
+                UtilsNormalizeText(
+                    deviceName,
+                    nameData,
+                    BM83_DEVICE_NAME_MAX_LEN + 1
+                );
+                LogInfo(LOG_SOURCE_BT, "BT: Module Name: %s", deviceName);
             }
             if (event == BM83_EVT_REPORT_BTM_INITIAL_STATUS) {
                 if (eventData[BM83_FRAME_DB0] ==

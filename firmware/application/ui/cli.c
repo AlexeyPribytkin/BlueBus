@@ -145,6 +145,55 @@ void CLIWrite(const char *format, ...)
 }
 
 /**
+ * CLIGetArgString()
+ *     Description:
+ *         Combine multiple arguments into a single string
+ *     Params:
+ *         char **msgBuf - The message buffer
+ *         uint8_t startIdx - The argument to start at
+ *         uint8_t argCount - The number of arguments in the buffer
+ *         char *string - The buffer to write the string into
+ *         uint8_t maxLen - The maximum length of the string
+ *     Returns:
+ *         uint8_t - 0 if the arguments did not fit in the given buffer
+ */
+static uint8_t CLIGetArgString(
+    char **msgBuf,
+    uint8_t startIdx,
+    uint8_t argCount,
+    char *string,
+    uint8_t maxLen
+) {
+    uint8_t strIdx = 0;
+    uint8_t idx = 0;
+    for (idx = startIdx; idx < argCount; idx++) {
+        if (msgBuf[idx] == 0) {
+            break;
+        }
+        // Re-add the space that was dropped when tokenized
+        if (strIdx > 0) {
+            if (strIdx >= maxLen) {
+                return 0;
+            }
+            string[strIdx++] = ' ';
+        }
+        uint8_t i = 0;
+        for (i = 0; msgBuf[idx][i] != '\0'; i++) {
+            char c = msgBuf[idx][i];
+            if (c < 0x20 || c > 0x7E) {
+                continue;
+            }
+            if (strIdx >= maxLen) {
+                return 0;
+            }
+            string[strIdx++] = c;
+        }
+    }
+    string[strIdx] = '\0';
+    return 1;
+}
+
+/**
  * CLICommandBTBC127()
  *     Description:
  *         Parse the "BT" CLI Commands for the BC127
@@ -211,20 +260,11 @@ void CLICommandBTBC127(char **msgBuf, uint8_t *cmdSuccess, uint8_t delimCount)
             UtilsStricmp(msgBuf[2], "CVC") == 0 ||
             UtilsStricmp(msgBuf[2], "APTX") == 0)
         ) {
-            char license[25];
-            memset(license, 0, 25);
-            snprintf(
-                license,
-                25,
-                "%s %s %s %s %s",
-                msgBuf[3],
-                msgBuf[4],
-                msgBuf[5],
-                msgBuf[6],
-                msgBuf[7]
-            );
-            BC127CommandLicense(cli.bt, msgBuf[2], license);
-            *cmdSuccess = 1;
+            char license[25] = {0};
+            if (CLIGetArgString(msgBuf, 3, delimCount, license, 24) != 0) {
+                BC127CommandLicense(cli.bt, msgBuf[2], license);
+                *cmdSuccess = 1;
+            }
         }
     } else if (UtilsStricmp(msgBuf[1], "MGAIN") == 0) {
         if (delimCount == 2) {
@@ -287,34 +327,10 @@ void CLICommandBTBC127(char **msgBuf, uint8_t *cmdSuccess, uint8_t delimCount)
     } else if (UtilsStricmp(msgBuf[1], "UNPAIR") == 0) {
         BC127CommandUnpair(cli.bt);
     } else if (UtilsStricmp(msgBuf[1], "NAME") == 0) {
-        char nameBuf[33];
-        memset(nameBuf, 0, 33);
-        uint8_t wordLength = delimCount - 2;
-        uint8_t wordCounter = 2;
-        while (wordLength != 0) {
-            uint8_t wordStrLen = strlen(msgBuf[wordCounter]);
-            uint8_t nameStrLen = strlen(nameBuf);
-            if (nameStrLen + wordStrLen <= 32) {
-                uint8_t i = 0;
-                for (i = 0; i < wordStrLen; i++) {
-                    nameBuf[nameStrLen + i] = msgBuf[wordCounter][i];
-                }
-            } else {
-                wordLength = 0;
-                *cmdSuccess = 0;
-            }
-            wordLength--;
-            wordCounter++;
-            if (*cmdSuccess != 0 && wordLength != 0) {
-                nameStrLen = strlen(nameBuf);
-                // Ensure we do not overflow the buffer
-                if (nameStrLen <= 32) {
-                    // Add the space we will have taken away
-                    nameBuf[nameStrLen] = ' ';
-                }
-            }
-        }
-        if (*cmdSuccess != 0) {
+        char nameBuf[33] = {0};
+        if (CLIGetArgString(msgBuf, 2, delimCount, nameBuf, 32) == 0) {
+            *cmdSuccess = 0;
+        } else {
             BC127CommandSetModuleName(cli.bt, nameBuf);
         }
     } else if (UtilsStricmp(msgBuf[1], "VERSION") == 0) {
@@ -379,6 +395,35 @@ void CLICommandBTBM83(char **msgBuf, uint8_t *cmdSuccess, uint8_t delimCount)
         BM83CommandPairingEnable(cli.bt);
     } else if (UtilsStricmp(msgBuf[1], "MACID") == 0) {
         BM83CommandReadLocalBDAddress(cli.bt);
+    } else if (UtilsStricmp(msgBuf[1], "NAME") == 0) {
+        char deviceName[CONFIG_STRING_BT_DEVICE_NAME_LEN + 1] = {0};
+        if (CLIGetArgString(
+                msgBuf,
+                2,
+                delimCount,
+                deviceName,
+                CONFIG_STRING_BT_DEVICE_NAME_LEN
+            ) == 0
+        ) {
+            CLIWrite(
+                "BT Name must be %d characters or less\r\n",
+                CONFIG_STRING_BT_DEVICE_NAME_LEN
+            );
+            *cmdSuccess = 0;
+        } else if (strlen(deviceName) == 0) {
+            ConfigGetBTDeviceName(deviceName);
+            if (strlen(deviceName) == 0) {
+                CLIWrite("BT Name: BlueBus\r\n");
+            } else {
+                CLIWrite("BT Name: %s\r\n", deviceName);
+            }
+            BM83CommandReadLocalDeviceName(cli.bt);
+        } else {
+            ConfigSetBTDeviceName(deviceName);
+            BM83CommandSetLocalDeviceName(cli.bt, deviceName);
+            BM83CommandChangeDeviceName(cli.bt, deviceName);
+            CLIWrite("BT Name set to: %s\r\n", deviceName);
+        }
     } else if (UtilsStricmp(msgBuf[1], "MGAIN") == 0) {
         uint8_t currentMicGain = ConfigGetSetting(CONFIG_SETTING_MIC_GAIN);
         if (delimCount == 2) {
@@ -566,6 +611,7 @@ void CLIProcess()
             char tmpMsg[messageLength];
             strcpy(tmpMsg, msg);
             char *msgBuf[delimCount];
+            memset(msgBuf, 0, sizeof(msgBuf));
             char *p = strtok(tmpMsg, " ");
             i = 0;
             while (p != 0x00) {
@@ -1007,6 +1053,8 @@ void CLIProcess()
                     micGain = 0x01;
                 } else {
                     BM83CommandRestore(cli.bt);
+                    BM83CommandRestoreDefaultDeviceName(cli.bt);
+                    ConfigSetBTDeviceName("");
                     BTPairedDeviceClearRecords();
                     ConfigSetSetting(CONFIG_SETTING_LAST_CONNECTED_DEVICE, 0x00);
                     micGain = 0x00;
@@ -1069,6 +1117,7 @@ void CLIProcess()
                     CLIWrite("    BT LIST - Query the BM83 for the paired device list\r\n");
                     CLIWrite("    BT PAIR - Enter Pairing Mode\r\n");
                     CLIWrite("    BT MACID - Query the BM83 for the MAC Address\r\n");
+                    CLIWrite("    BT NAME <name> - Set the Bluetooth name, up to 23 chars. Display the name, when run without params\r\n");
                     CLIWrite("    BT BLE - Enter BLE Mode\r\n");
                     CLIWrite("    BT PLAY - Send the AVRCP Play Command\r\n");
                     CLIWrite("    BT PAUSE - Send the AVRCP Pause Command\r\n");

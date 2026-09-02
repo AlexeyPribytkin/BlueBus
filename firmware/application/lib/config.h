@@ -80,6 +80,10 @@
 #define CONFIG_INFO_BC127_BOOT_FAIL_COUNTER_MSB_ADDRESS 0xA0
 #define CONFIG_INFO_BC127_BOOT_FAIL_COUNTER_LSB_ADDRESS 0xA1
 
+/* EEPROM 0xC0 - 0xFF: Device Name & Reserved */
+#define CONFIG_STRING_BT_DEVICE_NAME_ADDRESS 0xC0 // through 0xD7
+#define CONFIG_STRING_BT_DEVICE_NAME_LEN 23
+
 /* EEPROM 0x100 - 0x237: Bluetooth Paired Devices Storage */
 #define CONFIG_BT_DEVICE_EEPROM_BASE 0x100
 
@@ -219,6 +223,7 @@
 #define CONFIG_VALUE_CACHE_SIZE (CONFIG_VALUE_END_ADDRESS - CONFIG_VALUE_START_ADDRESS + 1)
 
 uint16_t ConfigGetBC127BootFailures();
+void ConfigGetBTDeviceName(char *);
 uint8_t ConfigGetBuildWeek();
 uint8_t ConfigGetBuildYear();
 void ConfigGetBytes(uint8_t, uint8_t *, uint8_t);
@@ -252,6 +257,7 @@ void ConfigGetVehicleIdentity(uint8_t *);
 void ConfigGetString(uint8_t, char *, uint8_t);
 void ConfigSetBC127BootFailures(uint16_t);
 void ConfigSetBootloaderMode(uint8_t);
+void ConfigSetBTDeviceName(char *);
 void ConfigSetByte(uint8_t, uint8_t);
 void ConfigSetBytes(uint8_t, const uint8_t *, uint8_t);
 void ConfigSetComfortLock(uint8_t);

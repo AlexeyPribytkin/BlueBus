@@ -111,6 +111,28 @@ uint16_t ConfigGetBC127BootFailures()
 }
 
 /**
+ * ConfigGetBTDeviceName()
+ *     Description:
+ *         Get the configured Bluetooth device name. An unset name is returned
+ *         as an empty string
+ *     Params:
+ *         char *name - A buffer of at least
+ *             CONFIG_STRING_BT_DEVICE_NAME_LEN + 1 bytes, since the string in
+ *             the EEPROM is not guaranteed to be terminated
+ *     Returns:
+ *         void
+ */
+void ConfigGetBTDeviceName(char *name)
+{
+    ConfigGetString(
+        CONFIG_STRING_BT_DEVICE_NAME_ADDRESS,
+        name,
+        CONFIG_STRING_BT_DEVICE_NAME_LEN
+    );
+    name[CONFIG_STRING_BT_DEVICE_NAME_LEN] = '\0';
+}
+
+/**
  * ConfigGetBytes()
  *     Description:
  *         Get a byte into the EEPROM and update cache
@@ -652,6 +674,27 @@ void ConfigSetBC127BootFailures(uint16_t failureCount)
 void ConfigSetBootloaderMode(uint8_t bootloaderMode)
 {
     ConfigSetByte(CONFIG_BOOTLOADER_MODE_ADDRESS, bootloaderMode);
+}
+
+/**
+ * ConfigSetBTDeviceName()
+ *     Description:
+ *         Set the BTM name
+ *     Params:
+ *         char *name - The name to store, up to
+ *             CONFIG_STRING_BT_DEVICE_NAME_LEN characters
+ *     Returns:
+ *         void
+ */
+void ConfigSetBTDeviceName(char *name)
+{
+    char deviceName[CONFIG_STRING_BT_DEVICE_NAME_LEN + 1] = {0};
+    UtilsStrncpy(deviceName, name, CONFIG_STRING_BT_DEVICE_NAME_LEN + 1);
+    ConfigSetString(
+        CONFIG_STRING_BT_DEVICE_NAME_ADDRESS,
+        deviceName,
+        CONFIG_STRING_BT_DEVICE_NAME_LEN
+    );
 }
 
 /**

@@ -855,6 +855,12 @@ void HandlerBTBM83BootStatus(void *ctx, uint8_t *data)
     HandlerContext_t *context = (HandlerContext_t *) ctx;
     uint8_t type = *data;
     if (type == BM83_DATA_BOOT_STATUS_POWER_ON) {
+        // Apply the device name if configured. The module defaults to "BlueBus"
+        char deviceName[CONFIG_STRING_BT_DEVICE_NAME_LEN + 1] = {0};
+        ConfigGetBTDeviceName(deviceName);
+        if (deviceName[0] != 0) {
+            BM83CommandChangeDeviceName(context->bt, deviceName);
+        }
         BM83CommandReadPairedDevices(context->bt);
     }
     if (

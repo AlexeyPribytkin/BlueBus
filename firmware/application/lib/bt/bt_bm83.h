@@ -36,6 +36,8 @@ extern int8_t BTBM83MicGainTable[];
 
 #define BM83_LINKED_DEVICE_QUERY_NAME 0x00
 
+#define BM83_DEVICE_NAME_MAX_LEN 23
+
 #define BM83_PBAP_SUBCMD_OPEN_SESSION 0x00
 #define BM83_PBAP_SUBCMD_CLOSE_SESSION 0x01
 #define BM83_PBAP_SUBCMD_PULL_PHONEBOOK 0x02
@@ -223,6 +225,10 @@ extern int8_t BTBM83MicGainTable[];
 #define BM83_CMD_MMI_ACTION_MIC_GAIN_DOWN 0x25
 #define BM83_CMD_MMI_ACTION_RESTORE 0x56
 
+#define BM83_CMD_VENDOR_PARAM_CHANGE_DEVICE_NAME 0x00
+#define BM83_CMD_VENDOR_PARAM_RESTORE_DEVICE_NAME 0x01
+#define BM83_CMD_VENDOR_PARAM_CHANGE_MSPK_GROUP_ID 0x02
+
 #define BM83_DATA_BTM_STATUS_POWER_OFF 0x00
 #define BM83_DATA_BTM_STATUS_PAIRING_ON 0x01
 #define BM83_DATA_BTM_STATUS_POWER_ON 0x02
@@ -389,6 +395,7 @@ void BM83CommandAVRCPRegisterNotification(BT_t *, uint8_t);
 void BM83CommandBTMUtilityFunction(BT_t *, uint8_t, uint8_t);
 void BM83CommandCallAccept(BT_t *);
 void BM83CommandCallEnd(BT_t *);
+void BM83CommandChangeDeviceName(BT_t *, char *);
 void BM83CommandConnect(BT_t *, BTPairedDevice_t *, uint8_t);
 void BM83CommandDial(BT_t *, char *);
 void BM83CommandDisconnect(BT_t *, uint8_t);
@@ -408,9 +415,12 @@ void BM83CommandPowerOn(BT_t *);
 void BM83CommandReadLinkStatus(BT_t *);
 void BM83CommandReadLinkedDeviceInformation(BT_t *, uint8_t);
 void BM83CommandReadLocalBDAddress(BT_t *);
+void BM83CommandReadLocalDeviceName(BT_t *);
 void BM83CommandReadPairedDevices(BT_t *);
 void BM83CommandRedial(BT_t *);
 void BM83CommandRestore(BT_t *);
+void BM83CommandRestoreDefaultDeviceName(BT_t *);
+void BM83CommandSetLocalDeviceName(BT_t *, char *);
 void BM83CommandVendorATCommand(BT_t *, char *);
 void BM83CommandVoiceRecognitionClose(BT_t *);
 void BM83CommandVoiceRecognitionOpen(BT_t *);
