@@ -2926,7 +2926,7 @@ void IBusCommandLMActivateBulbs(
         uint8_t tailLeft = IBUS_LM_BULB_OFF;
         uint8_t tailRight = IBUS_LM_BULB_OFF;
         if (
-            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT || 
+            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT ||
             parkingLights == IBUS_LM_PARK_LIGHTS_FRONT_AND_REAR
         ) {
             parkingLightLeft = IBUS_LME38_SIDE_MARKER_LEFT;
@@ -2985,7 +2985,7 @@ void IBusCommandLMActivateBulbs(
         uint8_t tailLeft = IBUS_LM_BULB_OFF;
         uint8_t tailRight = IBUS_LM_BULB_OFF;
         if (
-            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT || 
+            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT ||
             parkingLights == IBUS_LM_PARK_LIGHTS_FRONT_AND_REAR
         ) {
             parkingLightLeft = IBUS_LCM_SIDE_MARKER_LEFT;
@@ -3046,7 +3046,7 @@ void IBusCommandLMActivateBulbs(
         uint8_t tailLeft = IBUS_LM_BULB_OFF;
         uint8_t tailRight = IBUS_LM_BULB_OFF;
         if (
-            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT || 
+            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT ||
             parkingLights == IBUS_LM_PARK_LIGHTS_FRONT_AND_REAR
         ) {
             parkingLightLeft = IBUS_LCM_SIDE_MARKER_LEFT;
@@ -3088,7 +3088,7 @@ void IBusCommandLMActivateBulbs(
         );
     } else if (
         ibus->lmVariant == IBUS_LM_LSZ ||
-        ibus->lmVariant == IBUS_LM_LSZ_2 || 
+        ibus->lmVariant == IBUS_LM_LSZ_2 ||
         ibus->lmVariant == IBUS_LM_LM2_83
     ) {
         switch (blinkerSide) {
@@ -3106,7 +3106,7 @@ void IBusCommandLMActivateBulbs(
         uint8_t tailLeft = IBUS_LM_BULB_OFF;
         uint8_t tailRight = IBUS_LM_BULB_OFF;
         if (
-            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT || 
+            parkingLights == IBUS_LM_PARK_LIGHTS_FRONT ||
             parkingLights == IBUS_LM_PARK_LIGHTS_FRONT_AND_REAR
         ) {
             parkingLightLeft = IBUS_LSZ_SIDE_MARKER_LEFT;
